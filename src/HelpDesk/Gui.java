@@ -21,7 +21,8 @@ public class Gui {
 	JFrame frame;
 	private final JLabel lblWillkommenImHelpdesk = new JLabel("Willkommen im HelpDesk");
 	private final JLabel lblMadeByMatthias = new JLabel("Made by Matthias Cohn and Timur Burkholz");
-	private final JButton btnNewButton = new JButton("New button");
+	private final JButton btnNewButton = new JButton("Connect");
+	
 	
 	/**
 	 * Create the application.
@@ -35,14 +36,14 @@ public class Gui {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 800, 366);
+		frame.setBounds(100, 100, 435, 283);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		lblWillkommenImHelpdesk.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 18));
 		lblWillkommenImHelpdesk.setBounds(97, 34, 238, 29);
 		
 		frame.getContentPane().add(lblWillkommenImHelpdesk);
-		lblMadeByMatthias.setBounds(545, 302, 229, 14);
+		lblMadeByMatthias.setBounds(89, 172, 324, 14);
 		
 		frame.getContentPane().add(lblMadeByMatthias);
 		btnNewButton.addActionListener(new ActionListener() {
@@ -50,12 +51,12 @@ public class Gui {
 				do_btnNewButton_actionPerformed(arg0);
 			}
 		});
-		btnNewButton.setBounds(301, 152, 137, 42);
+		btnNewButton.setBounds(97, 94, 137, 42);
 		
 		frame.getContentPane().add(btnNewButton);
-	}
-
-	protected static void do_btnNewButton_actionPerformed(ActionEvent arg0) {
+		}
+        @SuppressWarnings("unused")
+		public void do_btnNewButton_actionPerformed(ActionEvent arg0) {
 	
 	//Verbindung zur Helpdesk Datendank
 		conHP.setConnection("mysql.webhosting47.1blu.de:3306", "s136045_2588076", "HelpDesk1!=0");
@@ -88,5 +89,28 @@ public class Gui {
 			System.out.println("Fehler bei Verbindung zur KEDB");
 		}
 		
+	if(conKE.isConnected())
+		System.out.println("Ke immernoch connected");
+	else System.out.println("KE-Verbindung getrennt");
+	
+	if(conTS.isConnected())
+		System.out.println("TS immernoch verbunden");
+	else System.out.println("TS-Verbindung getrennt");
+	
+	if(conHP.isConnected())
+		System.out.println("HP verbunden");
+	else System.out.println("HP-Verbindung getrennt");
+	
+	/*if(conHP.isConnected()&&conTS.isConnected()&&conHP.isConnected())
+	try{ */
+	frame.setVisible(false); 
+	conGui cGui=new conGui();
+	conGui.cGui.setVisible(true);
+	//}
+	//catch(Exception e) {
+	
+	//}
+	
+	
 	}
 }
