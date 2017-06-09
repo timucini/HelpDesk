@@ -53,24 +53,18 @@ public class Core {
 			break;
 			case 4:
 				dbCon.setConnection(AL.get(0),AL.get(1), AL.get(2), AL.get(3));
+			break;
 			default:
 				throw new Exception ("Datenbankkonfiguration unvollständig.");
 			}
-
+			dbCon.connect();
+			System.out.println("Verbunden mit DB");
 		} catch (Exception e) {
 			System.out.println("Datenbankverbindung nicht möglich");
 			dbConf.clearConfig(false);
 			return false;			
 		}
-		try {
-			dbCon.connect();
-		} catch (SQLException e) {
-			System.out.println("Datenbankverbindung nicht möglich");
-			dbConf.clearConfig(false);
-			return false;
-		}
-		
-		
-		return bDoConnect;
+				
+		return dbCon.isConnected();
 	}
 }

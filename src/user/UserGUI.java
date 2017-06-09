@@ -11,12 +11,16 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JLabel;
+import java.awt.Color;
+import java.awt.Font;
 
 public class UserGUI extends JFrame {
 
 	private JPanel contentPane;
 	private static JTable tm = new JTable(5, 5);
-	private final JButton cmd_connect = new JButton("Datenbank verbinden");
+	private static JButton cmd_connect = new JButton("Datenbank verbinden");
+	private static JLabel lbl_isConnected = new JLabel("Nicht verbunden");
 
 	/**
 	 * Create the frame.
@@ -44,6 +48,11 @@ public class UserGUI extends JFrame {
 		cmd_connect.setBounds(10, 11, 135, 23);
 		
 		contentPane.add(cmd_connect);
+		lbl_isConnected.setFont(new Font("Tahoma", Font.BOLD, 11));
+		lbl_isConnected.setForeground(Color.RED);
+		lbl_isConnected.setBounds(168, 15, 92, 14);
+		
+		contentPane.add(lbl_isConnected);
 
 		modTable();
 		getTable();
@@ -66,6 +75,16 @@ public class UserGUI extends JFrame {
 		}
 	}
 	protected void do_cmd_connect_actionPerformed(ActionEvent arg0) {
-		Core.dbConnect(true);
+		updatelbl(Core.dbConnect(true));
+	}
+	
+	private void updatelbl(boolean con){
+		if (con==true){
+			lbl_isConnected.setForeground(Color.GREEN);
+			lbl_isConnected.setText("DB verbunden");
+		}else{
+		lbl_isConnected.setForeground(Color.RED);
+		lbl_isConnected.setText("Nicht verbunden");
+		}
 	}
 }
