@@ -56,8 +56,10 @@ public class Gui {
 		}
         
 		public void do_btnNewButton_actionPerformed(ActionEvent arg0) {		
+			
 			Connection con=new Connection();
-			if(Connection.conHP.isConnected()&&Connection.conTS.isConnected()&&Connection.conHP.isConnected())
+			
+		//	if(Connection.conHP.isConnected()&&Connection.conTS.isConnected()&&Connection.conHP.isConnected())
 			frame.setVisible(false); 
 			conGui cGui=new conGui();
 			conGui.cGui.setVisible(true);

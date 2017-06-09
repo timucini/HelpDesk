@@ -36,6 +36,7 @@ public class einGui {
 	private final JComboBox comboBox_1 = new JComboBox();
 	private final JButton btnNewButton = new JButton("Einf\u00FCgen");
 	private final JOptionPane ticketErfolg=new JOptionPane();
+	private final JButton btnZurck = new JButton("zur\u00FCck");
 	
 	
 	
@@ -45,7 +46,7 @@ public class einGui {
 	private void init() {
 		eGui=new JFrame();
 		eGui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		eGui.setBounds(100, 100, 450, 300);
+		eGui.setBounds(100, 100, 491, 300);
 		eGui.getContentPane().setLayout(null);
 		
 		lblEingabeTicket.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 14));
@@ -83,9 +84,17 @@ public class einGui {
 				do_btnNewButton_actionPerformed(arg0);
 			}
 		});
-		btnNewButton.setBounds(269, 201, 118, 39);
+		btnNewButton.setBounds(227, 199, 118, 39);
 		
 		eGui.getContentPane().add(btnNewButton);
+		btnZurck.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				do_btnZurck_actionPerformed(arg0);
+			}
+		});
+		btnZurck.setBounds(376, 215, 89, 23);
+		
+		eGui.getContentPane().add(btnZurck);
 	}
 	protected void do_btnNewButton_actionPerformed(ActionEvent arg0) {
 	
@@ -134,5 +143,9 @@ public class einGui {
 	
 	
 }
+	protected void do_btnZurck_actionPerformed(ActionEvent arg0) {
+		eGui.setVisible(false);
+		conGui.cGui.setVisible(true);
+	}
 }
 
