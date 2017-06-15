@@ -45,12 +45,12 @@ public class UserGUI extends JFrame {
 				do_cmd_connect_actionPerformed(arg0);
 			}
 		});
-		cmd_connect.setBounds(10, 11, 135, 23);
+		cmd_connect.setBounds(10, 11, 200, 23);
 		
 		contentPane.add(cmd_connect);
 		lbl_isConnected.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lbl_isConnected.setForeground(Color.RED);
-		lbl_isConnected.setBounds(168, 15, 92, 14);
+		lbl_isConnected.setBounds(220, 15, 92, 14);
 		
 		contentPane.add(lbl_isConnected);
 
