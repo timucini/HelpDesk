@@ -1,59 +1,72 @@
 package HelpDesk;
 
+/*import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+
+public class Connection {
+	Connection conHP=new Connection();
+	
+	public void connect() {
+	
+	String usernameHP= "s136045_2588076";
+	String passwordHP= "HelpDesk1!=0";
+	String urlHP="mysql.webhosting47.1blu.de:3306";
+	
+	
+	conHP.connect() ;	
+
+	
+	
+	
+	
+	}
+}*/
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 import dbHelper.*;
 
 
 
 public class Connection {
-	static DBCon conHP=new DBCon();
-	static DBCon conTS=new DBCon();
-	static DBCon conKE=new DBCon();
-	
-	
-
-	
-
+	static dbHelper.ConfigLoader dbConf=new ConfigLoader();
+	static dbHelper.DBCon conHP = new DBCon();
+	static ArrayList<String> AL=new ArrayList<String>();
+	static String[] Arr1=null;
+	static String[][] Arr2=null;
 public Connection() {
-	connect();
-}
-private void connect() {
-	//Verbindung zur Helpdesk Datendank
-			conHP.setConnection("mysql.webhosting47.1blu.de:3306", "s136045_2588076", "HelpDesk1!=0");
+	try {
+		AL=dbConf.getsArrLConfigItems();
+	} catch (Exception e2) {
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	}
+	switch (AL.size()){
+	case 3:
+		conHP.setConnection(AL.get(0),AL.get(1), AL.get(2));				
+	break;
+	case 4:
+		conHP.setConnection(AL.get(0),AL.get(1), AL.get(2), AL.get(3));
+	break;
+	default:
 		try {
-			conHP.connect();
-			System.out.println("Verbindungen steht zur HP-DB");
-		} catch (SQLException e1) {
+			throw new Exception ("Datenbankkonfiguration unvollständig.");
+		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-			System.out.println("Fehler bei Verbindung zur HP-DB");
 		}
-		//Verbindung zur Ticketstatus DB
-			conTS.setConnection("mysql.webhosting47.1blu.de;3306", "s136045_2588057", "TicketStatus1!=0");
-		try {
-			conTS.connect();
-			System.out.println("Verbindungen steht zur TS-DB");
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			System.out.println("Fehler bei Verbindung zur TS-DB");
-		}
-		//Verbindung zur KEDB
-			conKE.setConnection("mysql.webhosting47.1blu.de;3306", "s136045_2588052", "KEDB1!=0");
-			try {
-				conKE.connect();
-				System.out.println("Verbindungen steht zur KEDB");
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				System.out.println("Fehler bei Verbindung zur KEDB");
-			}
+	}
+	try {
+		conHP.connect();
+		System.out.println("Verbunden mit DB");
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 	
-}
-public boolean checkCon() {
-	if(conHP.isConnected()&&conTS.isConnected()&&conHP.isConnected())
-		return true;
-	else
-	return false;
+
 }
 }
+

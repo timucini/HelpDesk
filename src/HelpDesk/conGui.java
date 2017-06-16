@@ -33,7 +33,7 @@ public class conGui {
 	
 	private void init() {
 		cGui=new JFrame();
-		cGui.setBounds(100, 100, 435, 283);
+		cGui.setBounds(100, 100, 460, 283);
 		cGui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		cGui.getContentPane().setLayout(null);
 		btnNewButton.addActionListener(new ActionListener() {
@@ -62,6 +62,11 @@ public class conGui {
 		lblTicketstatus.setBounds(51, 147, 119, 29);
 		
 		cGui.getContentPane().add(lblTicketstatus);
+		btnHierKlicken_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				do_btnHierKlicken_1_actionPerformed(e);
+			}
+		});
 		btnHierKlicken_1.setBounds(188, 147, 89, 29);
 		
 		cGui.getContentPane().add(btnHierKlicken_1);
@@ -76,7 +81,7 @@ public class conGui {
 				do_btnDisconnect_actionPerformed(e);
 			}
 		});
-		btnDisconnect.setBounds(330, 215, 89, 23);
+		btnDisconnect.setBounds(318, 209, 105, 23);
 		
 		cGui.getContentPane().add(btnDisconnect);
 	}
@@ -95,12 +100,16 @@ public class conGui {
 		cGui.setVisible(false);
 		try {
 			Connection.conHP.disconnect();
-			Connection.conTS.disconnect();
-			Connection.conKE.disconnect();
+			
 			Gui.frame.setVisible(true);
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+	}
+	protected void do_btnHierKlicken_1_actionPerformed(ActionEvent e) {
+		Gui.frame.setVisible(false);
+		statusGui sGui=new statusGui();
+		statusGui.sGui.setVisible(true);
 	}
 }
