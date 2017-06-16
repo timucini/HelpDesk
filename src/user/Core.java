@@ -4,7 +4,8 @@
 package user;
 
 import java.awt.EventQueue;
-import java.sql.SQLException;
+import sysInf.*;
+
 import java.util.ArrayList;
 
 import dbHelper.*;
@@ -15,6 +16,7 @@ import dbHelper.*;
  *
  */
 public class Core {
+	static SysInf actSysInf=new SysInf();
 	static dbHelper.ConfigLoader dbConf=new ConfigLoader();
 	static dbHelper.DBCon dbCon = new DBCon();
 	static ArrayList<String> AL=new ArrayList<String>();
@@ -66,5 +68,17 @@ public class Core {
 		}
 				
 		return dbCon.isConnected();
+	}
+	public static void printSysInf(){
+		System.out.println(actSysInf.getComputername());
+		System.out.println(actSysInf.getLogonServer());
+		System.out.println(actSysInf.getOS());
+		System.out.println(actSysInf.getProcessor());
+		System.out.println(actSysInf.getUserName());
+		System.out.println(actSysInf.getSysDrive());
+		System.out.println(actSysInf.getSysDriveUsage().toString()+"%");
+		System.out.println(actSysInf.getIPv4Addr());
+		System.out.println(actSysInf.getIPv6Addr());
+		System.out.println(actSysInf.getMAC());
 	}
 }

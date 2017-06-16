@@ -1,8 +1,5 @@
 package user;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -17,10 +14,15 @@ import java.awt.Font;
 
 public class UserGUI extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private static JTable tm = new JTable(5, 5);
 	private static JButton cmd_connect = new JButton("Datenbank verbinden");
 	private static JLabel lbl_isConnected = new JLabel("Nicht verbunden");
+	private final JButton cmd_system = new JButton("Systeminformationen anzeigen");
 
 	/**
 	 * Create the frame.
@@ -53,6 +55,14 @@ public class UserGUI extends JFrame {
 		lbl_isConnected.setBounds(220, 15, 92, 14);
 		
 		contentPane.add(lbl_isConnected);
+		cmd_system.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				do_cmd_system_actionPerformed(arg0);
+			}
+		});
+		cmd_system.setBounds(10, 45, 200, 23);
+		
+		contentPane.add(cmd_system);
 
 		modTable();
 		getTable();
@@ -86,5 +96,8 @@ public class UserGUI extends JFrame {
 		lbl_isConnected.setForeground(Color.RED);
 		lbl_isConnected.setText("Nicht verbunden");
 		}
+	}
+	protected void do_cmd_system_actionPerformed(ActionEvent arg0) {
+		Core.printSysInf();
 	}
 }
