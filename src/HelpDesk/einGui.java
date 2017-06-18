@@ -37,6 +37,7 @@ public class einGui {
 	private final JButton btnNewButton = new JButton("Einf\u00FCgen");
 	private final JOptionPane ticketErfolg=new JOptionPane();
 	private final JButton btnZurck = new JButton("zur\u00FCck");
+	private final JComboBox comboBox_2 = new JComboBox();
 	
 	
 	
@@ -44,7 +45,6 @@ public class einGui {
 		init();
 	}
 	private void init() {
-		eGui=new JFrame();
 		eGui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		eGui.setBounds(100, 100, 491, 300);
 		eGui.getContentPane().setLayout(null);
@@ -55,12 +55,12 @@ public class einGui {
 		eGui.getContentPane().add(lblEingabeTicket);
 		textField_1.setColumns(10);
 		textField_1.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Ci-ID", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		textField_1.setBounds(77, 66, 105, 39);
+		textField_1.setBounds(177, 11, 105, 39);
 		
 		eGui.getContentPane().add(textField_1);
 		textField_2.setColumns(10);
 		textField_2.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Mitarbeiter", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		textField_2.setBounds(227, 66, 105, 39);
+		textField_2.setBounds(247, 66, 105, 39);
 		
 		eGui.getContentPane().add(textField_2);
 		comboBox.setBorder(new TitledBorder(null, "Bitte ausw\u00E4hlen", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -95,11 +95,27 @@ public class einGui {
 		btnZurck.setBounds(376, 215, 89, 23);
 		
 		eGui.getContentPane().add(btnZurck);
+		comboBox_2.setBorder(new TitledBorder(null, "Ci-ID", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		comboBox_2.setBounds(23, 65, 105, 40);
+		
+		eGui.getContentPane().add(comboBox_2);
+		String table="`db136045x2588076`.`CIs`";
+		String column="`id`";
+		try {
+			String[] s = Connection.conHP.getContentOfColumn(table, column);
+			comboBox_2.setModel(new javax.swing.DefaultComboBoxModel(s));
+			
+			
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	
 	}
 	protected void do_btnNewButton_actionPerformed(ActionEvent arg0) {
 	
         
-        String eingabe2=textField_1.getText();
+        String eingabe2=String.valueOf(comboBox_2.getSelectedItem());;
         String eingabe3=textField_2.getText();
         String eingabe4= "0";
         String eingabe5= "0";
@@ -132,7 +148,8 @@ public class einGui {
           
 		try {
 			
-			Connection.conHP.insertDataSet("INSERT INTO `db136045x2588076`.`Ticket` ( `Ci-ID`, `Mitarbeiter`, `Telefon`, `PCs`, `Hardware`, `Sofware`, `Beschreibung`)"+" VALUES ("+val+")");
+			Connection.conHP.insertDataSet("INSERT INTO `db136045x2588076`.`Ticket` ( `CIs_id`, `Mitarbeiter`, `Telefon`, `PCs`, `Hardware`, `Software`, `Beschreibung`)"+" VALUES ("+val+")");
+			//Connection.conTS.insertDataSet("INSERT INTO `db136045x2588057`.`Ticketstatus` ( `CIs_id`, `Mitarbeiter`, `Telefon`, `PCs`, `Hardware`, `Software`, `Beschreibung`)"+" VALUES ("+val+")");
 			JOptionPane.showMessageDialog(eGui, "Ticket eingetragen");
 			eGui.setVisible(false);
 			conGui.cGui.setVisible(true);
@@ -140,7 +157,7 @@ public class einGui {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+		
 	
 }
 	protected void do_btnZurck_actionPerformed(ActionEvent arg0) {
