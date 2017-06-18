@@ -5,15 +5,16 @@ package user;
 
 import java.awt.EventQueue;
 import sysInf.*;
-
 import java.util.ArrayList;
+
+import javax.swing.JFileChooser;
 
 import dbHelper.*;
 
 
 /**
- * @author Ich
- *
+ * @author Matthias Cohn (565998)
+ *@version 2017-06-16
  */
 public class Core {
 	static SysInf actSysInf=new SysInf();
@@ -22,6 +23,7 @@ public class Core {
 	static ArrayList<String> AL=new ArrayList<String>();
 	static String[] Arr1=null;
 	static String[][] Arr2=null;
+	protected static String[][] SysConf=new String[2][14];
 	/**
 	 * 
 	 */
@@ -44,6 +46,7 @@ public class Core {
 				}
 			}
 		});
+		load();
 	}
 
 	public static boolean dbConnect(boolean bDoConnect){
@@ -65,20 +68,56 @@ public class Core {
 			System.out.println("Datenbankverbindung nicht möglich");
 			dbConf.clearConfig(false);
 			return false;			
-		}
-				
+		}				
 		return dbCon.isConnected();
 	}
-	public static void printSysInf(){
-		System.out.println(actSysInf.getComputername());
-		System.out.println(actSysInf.getLogonServer());
-		System.out.println(actSysInf.getOS());
-		System.out.println(actSysInf.getProcessor());
-		System.out.println(actSysInf.getUserName());
-		System.out.println(actSysInf.getSysDrive());
-		System.out.println(actSysInf.getSysDriveUsage().toString()+"%");
-		System.out.println(actSysInf.getIPv4Addr());
-		System.out.println(actSysInf.getIPv6Addr());
-		System.out.println(actSysInf.getMAC());
+	
+	public static boolean isDbConnected(){
+		return dbCon.isConnected();
+	}
+	
+	private static void loadSysInf(){
+		SysConf[0][0]="Computername";
+		SysConf[1][0]=actSysInf.getComputername();
+		SysConf[0][1]="Anmeldserver";
+		SysConf[1][1]=actSysInf.getLogonServer();
+		SysConf[0][2]="Benutzername";
+		SysConf[1][2]=actSysInf.getUserName();
+		SysConf[0][3]="Betriebssystem";
+		SysConf[1][3]=actSysInf.getOS();
+		SysConf[0][4]="CPU";
+		SysConf[1][4]=actSysInf.getProcessor();
+		SysConf[0][5]="Anz. d. CPUs";
+		SysConf[1][5]=String.valueOf(actSysInf.getNumberOfCPU());
+		SysConf[0][6]="Systemlaufwerk";
+		SysConf[1][6]=actSysInf.getSysDrive();
+		SysConf[0][7]="Kapazität Systempartition";
+		SysConf[1][7]=Double.toString(actSysInf.getSysDriveCap());
+		SysConf[0][8]="Freier Speicherplatz Sys";
+		SysConf[1][8]=Double.toString(actSysInf.getSysDriveFree());
+		SysConf[0][9]="Nutzung Systempartition";
+		SysConf[1][9]=String.valueOf(actSysInf.getSysDriveUsage())+"%";
+		SysConf[0][10]="RAM";
+		SysConf[1][10]="RAM kann nicht ausgelesen werden";
+		SysConf[0][11]="IPv4-Addresse";
+		SysConf[1][11]=actSysInf.getIPv4Addr();
+		SysConf[0][12]="IPv6-Addresse";
+		SysConf[1][12]=actSysInf.getIPv6Addr();
+		SysConf[0][13]="MAC";
+		SysConf[1][13]=actSysInf.getMAC();	
+	}
+	
+	public static String[][] getSysInf(){
+		loadSysInf();
+		return SysConf;
+	}
+	
+	public static void load(){
+		//https://www.java-forum.org/thema/aktuellen-pfad-der-anwendung-ermitteln.21044/
+		String working_dir = System.getProperty("user.dir");
+		JFileChooser fcFile = new JFileChooser();
+		System.out.println(fcFile.getCurrentDirectory().getAbsolutePath());
+		System.out.println(working_dir);
+		
 	}
 }
