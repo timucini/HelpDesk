@@ -57,22 +57,22 @@ public class UserGUI extends JFrame {
 		setTitle("HelpDesk - User-Interface");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 500);
-		
+
 		setJMenuBar(menuBar);
-		
+
 		menuBar.add(mnDatei);
 		mntmDatenbankVerbinden.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				do_mntmDatenbankVerbinden_actionPerformed(arg0);
 			}
 		});
-		
+
 		mnDatei.add(mntmDatenbankVerbinden);
-		
+
 		mnDatei.add(mntmBeenden);
-		
+
 		menuBar.add(mnHilfe);
-		
+
 		mnHilfe.add(mntmber);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -81,41 +81,42 @@ public class UserGUI extends JFrame {
 		lbl_isConnected.setBounds(220, 15, 92, 14);
 		lbl_isConnected.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lbl_isConnected.setForeground(Color.RED);
-		
+
 		contentPane.add(lbl_isConnected);
 
 		/*
-		modTable();
-		getTable();
-		*/
+		 * modTable(); getTable();
+		 */
 		showSysInf();
+		updatelbl(Core.isDbConnected());
 	}
-	
-	private static void showSysInf(){
+
+	private static void showSysInf() {
 		Core.getSysInf();
-	scrollP_SysInf.setBorder(new TitledBorder(null, "Aktuelle Systemkonfiguration", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-	scrollP_SysInf.setBounds(10, 327, 414, 102);
-	
-	contentPane.add(scrollP_SysInf);
-	tm_SysInf=new JTable(Core.SysConf[0].length,Core.SysConf.length);
-	scrollP_SysInf.setViewportView(tm_SysInf);
-	tm_SysInf.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	
-	tm_SysInf.setColumnSelectionAllowed(false);
-	tm_SysInf.setCellSelectionEnabled(true);
-	tm_SysInf.setRowSelectionAllowed(true);
-	//https://www.java-forum.org/thema/jtable-spaltennamen-aendern.2266/
-	tm_SysInf.setModel(new DefaultTableModel(new Object[Core.SysConf[0].length][Core.SysConf.length],
-			new String[] {"Eigenschaft", "Wert"}));
-	tabbedPane.setBounds(10, 45, 414, 271);
-	
-	contentPane.add(tabbedPane);
-	
-	tabbedPane.addTab("Ticket Status", null, layeredPane, null);
-	
-	tabbedPane.addTab("Neues Ticket anlegen", null, layeredPane_1, null);
-	updatelbl(Core.isDbConnected());
-	modTable(Core.SysConf); //Tabelle füllen
+		scrollP_SysInf.setBorder(new TitledBorder(null, "Aktuelle Systemkonfiguration", TitledBorder.LEADING,
+				TitledBorder.TOP, null, null));
+		scrollP_SysInf.setBounds(10, 327, 414, 102);
+
+		contentPane.add(scrollP_SysInf);
+		tm_SysInf = new JTable(Core.SysConf[0].length, Core.SysConf.length);
+		scrollP_SysInf.setViewportView(tm_SysInf);
+		tm_SysInf.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+		tm_SysInf.setColumnSelectionAllowed(false);
+		tm_SysInf.setCellSelectionEnabled(true);
+		tm_SysInf.setRowSelectionAllowed(true);
+		// https://www.java-forum.org/thema/jtable-spaltennamen-aendern.2266/
+		tm_SysInf.setModel(new DefaultTableModel(new Object[Core.SysConf[0].length][Core.SysConf.length],
+				new String[] { "Eigenschaft", "Wert" }));
+		tabbedPane.setBounds(10, 45, 414, 271);
+
+		contentPane.add(tabbedPane);
+
+		tabbedPane.addTab("Ticket Status", null, layeredPane, null);
+
+		tabbedPane.addTab("Neues Ticket anlegen", null, layeredPane_1, null);
+
+		modTable(Core.SysConf); // Tabelle füllen
 	}
 
 	public static void modTable(String[][] sArr) {
@@ -134,20 +135,21 @@ public class UserGUI extends JFrame {
 			System.out.println("");
 		}
 	}
-	
-	private static void updatelbl(boolean con){
-		if (con==true){
+
+	private static void updatelbl(boolean con) {
+		if (con == true) {
 			lbl_isConnected.setForeground(Color.GREEN);
 			lbl_isConnected.setText("DB verbunden");
-		}else{
-		lbl_isConnected.setForeground(Color.RED);
-		lbl_isConnected.setText("Nicht verbunden");	
+		} else {
+			lbl_isConnected.setForeground(Color.RED);
+			lbl_isConnected.setText("Nicht verbunden");
 		}
 	}
-	
+
 	protected void do_this_windowClosing(WindowEvent arg0) {
 		System.exit(0);
 	}
+
 	protected void do_mntmDatenbankVerbinden_actionPerformed(ActionEvent arg0) {
 		updatelbl(Core.dbConnect(true));
 		System.out.println(Core.isDbConnected());

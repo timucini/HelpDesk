@@ -36,6 +36,8 @@ public class Core {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		loadDBs();
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -46,7 +48,22 @@ public class Core {
 				}
 			}
 		});
-		load();
+	}
+	
+	public static void loadDBs(){
+		//https://www.java-forum.org/thema/aktuellen-pfad-der-anwendung-ermitteln.21044/
+		String working_dir = System.getProperty("user.dir");
+		working_dir+="\\admin.cfg";  //preselect file
+		try {
+			dbConf.setsFilePath(working_dir);
+		} catch (Exception e) {
+			// Wenn Datei nicht gefunden... Fileopener?!
+			e.printStackTrace();
+		}		
+		//System.out.println(working_dir);
+		dbConnect(true);
+		
+		
 	}
 
 	public static boolean dbConnect(boolean bDoConnect){
@@ -112,12 +129,5 @@ public class Core {
 		return SysConf;
 	}
 	
-	public static void load(){
-		//https://www.java-forum.org/thema/aktuellen-pfad-der-anwendung-ermitteln.21044/
-		String working_dir = System.getProperty("user.dir");
-		JFileChooser fcFile = new JFileChooser();
-		System.out.println(fcFile.getCurrentDirectory().getAbsolutePath());
-		System.out.println(working_dir);
-		
-	}
+
 }
