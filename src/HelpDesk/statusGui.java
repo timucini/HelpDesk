@@ -43,7 +43,6 @@ public statusGui(){
 	init();
 }
 public void init() {
-	sGui=new JFrame();
 	sGui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	sGui.setBounds(100, 100, 450, 326);
 	sGui.getContentPane().setLayout(null);

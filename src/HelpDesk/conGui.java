@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
+import java.awt.Color;
 
 
 public class conGui {
@@ -24,7 +25,7 @@ public class conGui {
 	private final  JButton btnHierKlicken_1 = new JButton("Hier klicken");
 	private final  JLabel lblLsungsvorschlge = new JLabel("L\u00F6sungsvorschl\u00E4ge");
 	private final  JButton btnHierKlicken_2 = new JButton("Hier klicken");
-	private final JButton btnDisconnect = new JButton("Disconnect");
+	private final JLabel lblDbVerbunden = new JLabel("Db nicht verbunden");
 
 
 	public conGui() {
@@ -33,7 +34,7 @@ public class conGui {
 	
 	private void init() {
 		cGui=new JFrame();
-		cGui.setBounds(100, 100, 460, 283);
+		cGui.setBounds(100, 100, 458, 351);
 		cGui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		cGui.getContentPane().setLayout(null);
 		btnNewButton.addActionListener(new ActionListener() {
@@ -73,17 +74,23 @@ public class conGui {
 		lblLsungsvorschlge.setBounds(51, 203, 111, 35);
 		
 		cGui.getContentPane().add(lblLsungsvorschlge);
+		btnHierKlicken_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				do_btnHierKlicken_2_actionPerformed(arg0);
+			}
+		});
 		btnHierKlicken_2.setBounds(188, 206, 89, 29);
 		
 		cGui.getContentPane().add(btnHierKlicken_2);
-		btnDisconnect.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				do_btnDisconnect_actionPerformed(e);
-			}
-		});
-		btnDisconnect.setBounds(318, 209, 105, 23);
+		lblDbVerbunden.setForeground(Color.RED);
+		lblDbVerbunden.setBounds(81, 281, 196, 19);
 		
-		cGui.getContentPane().add(btnDisconnect);
+		cGui.getContentPane().add(lblDbVerbunden);
+		
+		if(Connection.conHP.isConnected()) {
+		lblDbVerbunden.setForeground(Color.GREEN);
+		lblDbVerbunden.setText("DB verbunden");
+		}
 	}
 	protected void do_btnNewButton_actionPerformed(ActionEvent arg0) {
 		cGui.setVisible(false);
@@ -96,20 +103,15 @@ public class conGui {
 		beGui.bGui.setVisible(true);
 		
 	}
-	protected void do_btnDisconnect_actionPerformed(ActionEvent e) {
-		cGui.setVisible(false);
-		try {
-			Connection.conHP.disconnect();
-			
-			Gui.frame.setVisible(true);
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	}
 	protected void do_btnHierKlicken_1_actionPerformed(ActionEvent e) {
 		Gui.frame.setVisible(false);
 		statusGui sGui=new statusGui();
 		statusGui.sGui.setVisible(true);
+	}
+	protected void do_btnHierKlicken_2_actionPerformed(ActionEvent arg0) {
+		cGui.setVisible(false);
+		KEDB kGui=new KEDB();
+		KEDB.kGui.setVisible(true);
+		
 	}
 }
