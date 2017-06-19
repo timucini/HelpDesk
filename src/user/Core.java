@@ -16,13 +16,13 @@ import dbHelper.*;
  * @version 2017-06-16
  */
 public class Core {
-	static String DBConfFile = "user";
+	static String sDBConfFile = "user";
 	protected static String[][] SysConf = new String[14][2];
 	protected static String[][] Tickets = null;
 
 	static SysInf actSysInf = new SysInf();
-	static dbHelper.ConfigLoader dbConf = new ConfigLoader();
-	static dbHelper.DBCon dbCon = new DBCon();
+	static dbHelper.ConfigLoader dbConfStatus, dbConfHD;
+	static dbHelper.DBCon dbStatus, dbHD;
 	static ArrayList<String> AL = new ArrayList<String>();
 	static String[] Arr1 = null;
 	static String[][] Arr2 = null;
@@ -39,7 +39,7 @@ public class Core {
 	 */
 	public static void main(String[] args) {
 
-		loadDBs();
+		doDBAutoConnect(sDBConfFile);
 		loadSysInf();
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -53,40 +53,69 @@ public class Core {
 		});
 	}
 
-	public static void loadDBs() {
+	private static void doDBAutoConnect(String DBConfFile) {
+		dbConfStatus = loadDBsConf(DBConfFile);
+		dbStatus = dbConSetup(dbConfStatus);
+		// System.out.println("Verbunden mit Status: "+dbConnect(true,
+		// dbStatus));
+		// TODO AutoInitialize der DB-Inhalte im GUI
+	}
+
+	public static ConfigLoader loadDBsConf(String DBConfFile) {
 		// https://www.java-forum.org/thema/aktuellen-pfad-der-anwendung-ermitteln.21044/
+		dbHelper.ConfigLoader dbConf = new ConfigLoader();
 		String working_dir = System.getProperty("user.dir");
 		working_dir += "\\" + DBConfFile + ".cfg"; // preselect file
 		try {
 			dbConf.setsFilePath(working_dir);
 		} catch (Exception e) {
-			// Wenn Datei nicht gefunden... Fileopener?!
+			dbConf.clearConfig(false);
+			try {
+				dbConf.setsFilePath("");
+			} catch (Exception e1) {
+				System.out.println("Es konnte keine Config-File eingerichtet werden.");
+				e1.printStackTrace();
+			}
+			System.out.println("Es wurde kein passendes Config-File gefunden ... neues wählen");
 			e.printStackTrace();
 		}
+		return dbConf;
 		// System.out.println(working_dir);
 		// dbConnect(true);
 	}
 
-	public static boolean dbConnect(boolean bDoConnect) {
+	public static DBCon dbConSetup(ConfigLoader dbConf) {
+		DBCon dbCon = new DBCon();
+		AL = null;
+		try {
+			AL = dbConf.getsArrLConfigItems();
+			switch (AL.size()) {
+			case 3:
+				dbCon.setConnection(AL.get(0), AL.get(1), AL.get(2));
+				break;
+			case 4:
+				dbCon.setConnection(AL.get(0), AL.get(1), AL.get(2), AL.get(3));
+				break;
+			default:
+				throw new Exception("Datenbankkonfiguration unvollständig.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Konfiguration der Datenbankverbindung nicht möglich");
+			dbConf.clearConfig(false);
+			return null;
+		}
+		return dbCon;
+	}
+
+	public static boolean dbConnect(boolean bDoConnect, DBCon dbCon) {
 		if (bDoConnect == true) {
 			try {
-				AL = dbConf.getsArrLConfigItems();
-				switch (AL.size()) {
-				case 3:
-					dbCon.setConnection(AL.get(0), AL.get(1), AL.get(2));
-					break;
-				case 4:
-					dbCon.setConnection(AL.get(0), AL.get(1), AL.get(2), AL.get(3));
-					break;
-				default:
-					throw new Exception("Datenbankkonfiguration unvollständig.");
-				}
 				dbCon.connect();
 				System.out.println("Verbunden mit DB");
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("Datenbankverbindung nicht möglich");
-				dbConf.clearConfig(false);
 				return false;
 			}
 		} else {
@@ -103,7 +132,7 @@ public class Core {
 	}
 
 	public static boolean isDbConnected() {
-		return dbCon.isConnected();
+		return dbStatus.isConnected();
 	}
 
 	private static void loadSysInf() {
@@ -145,7 +174,7 @@ public class Core {
 	public static ArrayList<String> arrLDropDown(String Table, String Col) {
 		ArrayList<String> ArrL = new ArrayList<String>();
 		try {
-			ArrL = dbCon.getContentOfColumnList(Table, Col);
+			ArrL = dbStatus.getContentOfColumnList(Table, Col);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -156,73 +185,123 @@ public class Core {
 	public static String[][] getTicketsforClient() {
 		Tickets = null;
 		try {
-			Tickets = dbCon.getDataSets("SELECT t.idTicket, t.Created, s.Name, t.Updated " + "FROM Ticket t, Stati s "
-					+ "WHERE t.SendingCI='" + actSysInf.getComputername() + "' AND t.Status=s.idStati", false);
+			Tickets = dbStatus
+					.getDataSets(
+							"SELECT t.idTicket, t.Created, s.Name, t.Updated " + "FROM Ticket t, Stati s "
+									+ "WHERE t.SendingCI='" + actSysInf.getComputername() + "' AND t.Status=s.idStati",
+							false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 		return Tickets;
 	}
-	
-	public static String sIssueDescription(int iTicketID){
-		String Description="";
-		Arr1=null;
+
+	public static String sIssueDescription(int iTicketID) {
+		String Description = "";
+		Arr1 = null;
 		try {
-			Arr1=dbCon.getSingleDataSet("SELECT t.Mitarbeiter, h.HWType , s.SWType, t.Beschreibung, t.Gebaeude, t.Raum, t.Anschluss, t.ActSysConfig "+
-								"FROM Ticket t, HW h, SW s " +
-								"WHERE t.HW=h.idHW AND t.SW=s.idSW AND "+
-								"t.idTicket = "+iTicketID+";");
+			Arr1 = dbStatus.getSingleDataSet(
+					"SELECT t.Mitarbeiter, h.HWType , s.SWType, t.Beschreibung, t.Gebaeude, t.Raum, t.Anschluss, t.ActSysConfig "
+							+ "FROM Ticket t, HW h, SW s " + "WHERE t.HW=h.idHW AND t.SW=s.idSW AND " + "t.idTicket = "
+							+ iTicketID + ";");
 		} catch (Exception e) {
-			Arr1=null;
+			Arr1 = null;
 			e.printStackTrace();
 			return null;
 		}
-		if (Arr1!=null){
-			Description="";
-			if (Arr1.length!=8){
-				for (String s:Arr1){
-					Description+=s+"\n";
-				};
-			} else{
-			Description+="Gemeldet von: "+Arr1[0]+"\n";
-			Description+="Betroffene Hardware: "+Arr1[1]+"\n";
-			Description+="Betroffene Software: "+Arr1[2]+"\n";
-			Description+="Genaue Beschreibung: "+Arr1[3]+"\n";
-			Description+="Adresse / Gebäude: "+Arr1[4]+"\n";
-			Description+="Raum: "+Arr1[5]+"\n";
-			Description+="Anschluss: "+Arr1[6]+"\n";
-			Description+="Aktuelle Konfiguration: "+Arr1[7]+"\n";
+		if (Arr1 != null) {
+			Description = "";
+			if (Arr1.length != 8) {
+				for (String s : Arr1) {
+					Description += s + "\n";
+				}
+				;
+			} else {
+				Description += "Gemeldet von: " + Arr1[0] + "\n";
+				Description += "Betroffene Hardware: " + Arr1[1] + "\n";
+				Description += "Betroffene Software: " + Arr1[2] + "\n";
+				Description += "Genaue Beschreibung: " + Arr1[3] + "\n";
+				Description += "Adresse / Gebäude: " + Arr1[4] + "\n";
+				Description += "Raum: " + Arr1[5] + "\n";
+				Description += "Anschluss: " + Arr1[6] + "\n";
+				Description += "Aktuelle Konfiguration: " + Arr1[7] + "\n";
 			}
-		}		
+		}
 		return Description;
 	}
-	
-	public static String sSolution(int iTicketID){
-		Arr1=null;
-			try {
-				Arr1=dbCon.getSingleDataSet("SELECT s.DoThis FROM Solution s, Ticket t WHERE t.Solution = s.IDSolution");
-			} catch (Exception e) {
-				Arr1=null;
-				e.printStackTrace();
-				return null;
-			}
-		if (Arr1.length==1){
-			return Arr1[0];
-		}else return null;
-	}
-	
-	public static int sendTicket(ArrayList<String> arrLValues){
+
+	public static String sSolution(int iTicketID) {
+		Arr1 = null;
 		try {
-			AL=dbCon.getColumnsList("Ticket");
-			AL.remove(0); //id - Autoincrement
-			AL.remove(AL.size()-2); //Timestamp update
-			AL.remove(AL.size()-1); //TimeStamp created
+			Arr1 = dbStatus
+					.getSingleDataSet("SELECT s.DoThis FROM Solution s, Ticket t WHERE t.Solution = s.IDSolution");
+		} catch (Exception e) {
+			Arr1 = null;
+			e.printStackTrace();
+			return null;
+		}
+		if (Arr1.length == 1) {
+			return Arr1[0];
+		} else
+			return null;
+	}
+
+	public static int sendTicket(ArrayList<String> arrLValues) {
+		AL=null;
+		try {
+			// TODO AL überprüfen
+			AL = dbStatus.getColumnsList("Ticket");
+			AL.remove(0); // id - Autoincrement
+			AL.remove(AL.size() - 2); // Timestamp update
+			AL.remove(AL.size() - 1); // TimeStamp created
+			arrLValues.set(4, sForeignKey(dbStatus, arrLValues.get(4), "HWType","idHW", "HW"));
+			arrLValues.set(5, sForeignKey(dbStatus, arrLValues.get(5), "SWType","idSW", "SW"));
+			
+			for (String s:AL){
+				System.out.println(s);
+			}
+			for (String v:arrLValues){
+				System.out.println(v);
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;
 		}
 		return 1;
+	}
+
+	/**
+	 * @param db
+	 *            Datenbankobjekt in dem gesucht werden soll
+	 * @param Crit
+	 *            Suchkriterium
+	 * @param PrimKey
+	 *            in der ForeignTable (Spaltenname)
+	 * @param ForeignTable
+	 *            Name der ForeingTable
+	 * @param CritCol
+	 *            Name der Spalte in der das Kriterium gesucht wird
+	 * @return int : ForeignKey
+	 */
+	private static String sForeignKey(DBCon db, String Crit, String CritCol, String PrimKey, String ForeignTable) {
+		AL = null;
+		try {
+			AL = db.getSingleDataSetList("SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE "
+					+ CritCol + "='" + Crit + "'");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Fehler bei SQL: \n"+
+					"SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE "
+					+ CritCol + "='" + Crit + "'");
+			AL = null;
+			e.printStackTrace();
+		}
+		if (AL != null) {
+			return (AL.get(0));
+		} else {
+			return "1";
+		}
 	}
 }

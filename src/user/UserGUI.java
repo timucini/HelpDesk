@@ -337,7 +337,7 @@ public class UserGUI extends JFrame {
 	}
 	
 	protected void do_mntmDBVerbinden_actionPerformed(ActionEvent arg0) {
-		updatelbl(Core.dbConnect(true));
+		updatelbl(Core.dbConnect(true,Core.dbStatus));
 		fillcbBoxes(Core.isDbConnected());
 		fill_TicketTable();
 		cmd_send.setEnabled(Core.isDbConnected());
@@ -345,7 +345,7 @@ public class UserGUI extends JFrame {
 	}
 
 	protected void do_mntmDBTrennen_actionPerformed(ActionEvent e) {
-		updatelbl(Core.dbConnect(false));
+		updatelbl(Core.dbConnect(false,Core.dbStatus));
 		fillcbBoxes(Core.isDbConnected());
 		cmd_send.setEnabled(Core.isDbConnected());
 	}
