@@ -30,6 +30,9 @@ import javax.swing.UIManager;
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
 import javax.swing.JTextPane;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.ImageIcon;
 
 public class UserGUI extends JFrame {
 
@@ -67,9 +70,16 @@ public class UserGUI extends JFrame {
 	private static JComboBox<String> cbB_HW = new JComboBox<String>();
 	private static JComboBox<String> cbB_SW = new JComboBox<String>();
 	private static JScrollPane scrollPane = new JScrollPane();
-	private static JTextPane txtPane_Issue = new JTextPane();
+	private static JTextPane txtP_NewIssue = new JTextPane();
 	private static JTextField txt_Raum = new JTextField();
 	private static JTextField txt_Anschluss = new JTextField();
+	private final JScrollPane scrollP_Tickets = new JScrollPane();
+	private final JScrollPane scrollPane_2 = new JScrollPane();
+	private final JScrollPane scrollPane_3 = new JScrollPane();
+	private static JTextPane txtP_Issue = new JTextPane();
+	private static JTextPane txtP_Solution = new JTextPane();
+	private static JTable table_Tickets;
+	private final JButton cmd_TicketRefresh = new JButton("aktualisieren");
 
 	/**
 	 * Create the frame.
@@ -86,6 +96,7 @@ public class UserGUI extends JFrame {
 		setBounds(100, 100, 480, 450);
 
 		setJMenuBar(menuBar);
+		mnDatei.setMnemonic('D');
 
 		menuBar.add(mnDatei);
 		
@@ -104,6 +115,7 @@ public class UserGUI extends JFrame {
 		});
 		
 		menu.add(mntmDBTrennen);
+		mntmBeenden.setMnemonic('B');
 		mntmBeenden.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				do_mntmBeenden_actionPerformed(e);
@@ -111,8 +123,10 @@ public class UserGUI extends JFrame {
 		});
 
 		mnDatei.add(mntmBeenden);
+		mnHilfe.setMnemonic('h');
 
 		menuBar.add(mnHilfe);
+		mntmber.setMnemonic('b');
 
 		mnHilfe.add(mntmber);
 		menuBar.add(lbl_isConnected);
@@ -130,6 +144,35 @@ public class UserGUI extends JFrame {
 		contentPane.add(tabbedPane);
 		
 		tabbedPane.addTab("Ticket Status", null, panel_Status, null);
+		panel_Status.setLayout(null);
+		scrollP_Tickets.setBorder(new TitledBorder(null, "Bisherige Tickets", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		scrollP_Tickets.setBounds(0, 0, 459, 110);
+		
+		panel_Status.add(scrollP_Tickets);
+
+		scrollPane_2.setBorder(new TitledBorder(null, "Problembeschreibung", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		scrollPane_2.setBounds(0, 110, 459, 110);
+		
+		panel_Status.add(scrollPane_2);
+		txtP_Issue.setText("Kein Ticket ausgewählt");
+		
+		scrollPane_2.setViewportView(txtP_Issue);
+		scrollPane_3.setBorder(new TitledBorder(null, "L\u00F6sung", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		scrollPane_3.setBounds(0, 220, 459, 110);
+		
+		panel_Status.add(scrollPane_3);
+		txtP_Solution.setEditable(false);
+		
+		scrollPane_3.setViewportView(txtP_Solution);
+		cmd_TicketRefresh.setMnemonic('a');
+		cmd_TicketRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				do_cmd_TicketRefresh_actionPerformed(arg0);
+			}
+		});
+		cmd_TicketRefresh.setBounds(315, 335, 140, 25);
+		panel_Status.add(cmd_TicketRefresh);
+		cmd_TicketRefresh.setIcon(new ImageIcon(UserGUI.class.getResource("/com/sun/javafx/scene/web/skin/Redo_16x16_JFX.png")));
 		
 		tabbedPane.addTab("Neues Ticket anlegen", null, tabbedPane_NewTicket, null);
 		
@@ -168,7 +211,7 @@ public class UserGUI extends JFrame {
 		
 		panel_Issue.add(scrollPane);
 		
-		scrollPane.setViewportView(txtPane_Issue);
+		scrollPane.setViewportView(txtP_NewIssue);
 		
 		tabbedPane_NewTicket.addTab("3. Lokation", null, panel_location, "Wo tritt der Fehler auf / Wo erreichen Wir Sie");
 		panel_location.setLayout(null);
@@ -190,6 +233,9 @@ public class UserGUI extends JFrame {
 		
 		tabbedPane_NewTicket.addTab("4. Senden", null, panel_send, "Bitte überprüfen Sie Ihre vorherigen Eingaben, bevor Sie auf 'absenden' klicken - Das erspart ggf. Rückfragen");
 		panel_send.setLayout(null);
+		cmd_send.setToolTipText("Sie müssen mit der Datenbank verbunden sein, um ein Ticket erstellen zu können. \\n Stellen Sie unter Datei\\Datenbank\\verbinden die Verbindung zur Datenbank her.");
+		cmd_send.setEnabled(false);
+		cmd_send.setMnemonic('s');
 		cmd_send.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				do_cmd_send_actionPerformed(e);
@@ -211,10 +257,10 @@ public class UserGUI extends JFrame {
 
 		lbl_Info.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lbl_Info.setBorder(new TitledBorder(null, "Info", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		lbl_Info.setBounds(10, 11, 409, 88);
+		lbl_Info.setBounds(10, 11, 439, 88);
 		
 		panel_direct.add(lbl_Info);
-		scrollP_SysInf.setBounds(10, 110, 409, 241);
+		scrollP_SysInf.setBounds(10, 110, 439, 241);
 		panel_direct.add(scrollP_SysInf);
 
 		/*
@@ -250,6 +296,7 @@ public class UserGUI extends JFrame {
 		scrollP_SysInf.setBorder(new TitledBorder(null, "Aktuelle Systemkonfiguration", TitledBorder.LEADING,
 				TitledBorder.TOP, null, null));
 		tm_SysInf = new JTable(Core.SysConf[0].length, Core.SysConf.length);
+
 		scrollP_SysInf.setViewportView(tm_SysInf);
 		tm_SysInf.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -257,7 +304,7 @@ public class UserGUI extends JFrame {
 		tm_SysInf.setCellSelectionEnabled(true);
 		tm_SysInf.setRowSelectionAllowed(true);
 		// https://www.java-forum.org/thema/jtable-spaltennamen-aendern.2266/
-		tm_SysInf.setModel(new DefaultTableModel(new Object[Core.SysConf[0].length][Core.SysConf.length],
+		tm_SysInf.setModel(new DefaultTableModel(new Object[Core.SysConf.length][Core.SysConf[0].length],
 				new String[] { "Eigenschaft", "Wert" }));
 		modTable(Core.SysConf); // Tabelle füllen
 	}
@@ -265,7 +312,7 @@ public class UserGUI extends JFrame {
 	public static void modTable(String[][] sArr) {
 		for (int x = 0; x <= sArr.length - 1; x++) {
 			for (int y = 0; y <= sArr[x].length - 1; y++) {
-				tm_SysInf.setValueAt(sArr[x][y], y, x);
+				tm_SysInf.setValueAt(sArr[x][y], x, y);
 			}
 		}
 	}
@@ -292,12 +339,15 @@ public class UserGUI extends JFrame {
 	protected void do_mntmDBVerbinden_actionPerformed(ActionEvent arg0) {
 		updatelbl(Core.dbConnect(true));
 		fillcbBoxes(Core.isDbConnected());
+		fill_TicketTable();
+		cmd_send.setEnabled(Core.isDbConnected());
 		// System.out.println(Core.isDbConnected());
 	}
 
 	protected void do_mntmDBTrennen_actionPerformed(ActionEvent e) {
 		updatelbl(Core.dbConnect(false));
 		fillcbBoxes(Core.isDbConnected());
+		cmd_send.setEnabled(Core.isDbConnected());
 	}
 
 	protected void do_this_windowClosing(WindowEvent arg0) {
@@ -309,7 +359,7 @@ public class UserGUI extends JFrame {
 	}
 
 	protected void do_cmd_send_actionPerformed(ActionEvent e) {
-
+		createNewTicket();
 	}
 	
 	private void fillcbBoxes(boolean load){
@@ -329,8 +379,83 @@ public class UserGUI extends JFrame {
 			cbB_HW.removeAllItems();
 			cbB_SW.removeAllItems();
 		}
+	}	
+	private void fill_TicketTable(){
+		if(Core.getTicketsforClient()!=null){
+		table_Tickets = new JTable(Core.Tickets[0].length, Core.Tickets.length);
+		scrollP_Tickets.setViewportView(table_Tickets);
+		table_Tickets.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table_Tickets.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				do_table_Tickets_mouseClicked(arg0);
+			}
+		});
+		table_Tickets.setColumnSelectionAllowed(false);
+		table_Tickets.setCellSelectionEnabled(false);
+		table_Tickets.setRowSelectionAllowed(true);
+		// https://www.java-forum.org/thema/jtable-spaltennamen-aendern.2266/
+		table_Tickets.setModel(new DefaultTableModel(new Object[Core.Tickets[0].length][Core.Tickets.length],
+				new String[] { "Ticket-Nr", "Von (Erstellung)", "Status", "letzte Änderung" }));
+		modTicketTable(Core.Tickets); // Tabelle füllen
+		}else{
+			txtP_Issue.setText("Tickets konnten nicht von der Datenbank geladen werden.");
+		}
 	}
 	
-	// TODO: Checker, ob die Richtige DB/Tabellen/Spalten vorhanden sind
+	public static void modTicketTable(String[][] sArr) {
+		for (int x = 0; x <= sArr.length - 1; x++) {
+			for (int y = 0; y <= sArr[x].length - 1; y++) {
+				table_Tickets.setValueAt(sArr[x][y], y, x);
+			}
+		}
+	}
+	protected void do_table_Tickets_mouseClicked(MouseEvent arg0) {
+		if(table_Tickets.getSelectedRow()!=-1){
+			try{
+				txtP_Issue.setText(Core.sIssueDescription(Integer.parseInt((String) table_Tickets.getValueAt(table_Tickets.getSelectedRow(),0))));
+				txtP_Solution.setText(Core.sSolution(Integer.parseInt((String) table_Tickets.getValueAt(table_Tickets.getSelectedRow(),0))));
+			}catch (Exception e){
+				txtP_Issue.setText("Fehler bei der Auswahl");
+				txtP_Solution.setText("Fehler bei der Auswahl");
+			}
+		}else{
+			txtP_Issue.setText("Kein Ticket ausgewählt");
+			txtP_Solution.setText("Kein Ticket ausgewählt");
+		}
+	}
+	protected void do_cmd_TicketRefresh_actionPerformed(ActionEvent arg0) {
+		fill_TicketTable();
+	}
+	
+	private static void createNewTicket(){
+		ArrayList <String> ArrL = new ArrayList<String>();
+		ArrL.add(Core.SysConf[0][1]);  //Computername = SendingCI
+		ArrL.add(txt_Name.getText());
+		ArrL.add(txt_phone.getText());
+		ArrL.add(txt_Mail.getText());
+		ArrL.add(cbB_HW.getSelectedItem().toString());
+		ArrL.add(cbB_SW.getSelectedItem().toString());
+		ArrL.add(txtP_NewIssue.getText());
+		ArrL.add(txt_Geb.getText());
+		ArrL.add(txt_Raum.getText());
+		ArrL.add(txt_Anschluss.getText());
+		ArrL.add(sSysInf());
+		/*
+		for (String s:ArrL){
+			System.out.println(s);
+		}
+		*/
+		Core.sendTicket(ArrL);
+	}
+	
+	private static String sSysInf(){
+		String s="";
+		for (int x=0; x<=Core.SysConf.length-1;x++){
+			s+=Core.SysConf[x][0]+" :   ";
+			s+=Core.SysConf[x][1]+"\n";			
+		}		
+		return s;
+	}
 	
 }
