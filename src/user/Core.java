@@ -174,6 +174,7 @@ public class Core {
 	public static ArrayList<String> arrLDropDown(String Table, String Col) {
 		ArrayList<String> ArrL = new ArrayList<String>();
 		try {
+			// Da Felder indexiert (Unique) werden dies Alphabetisch zurück gegeben
 			ArrL = dbStatus.getContentOfColumnList(Table, Col);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -225,7 +226,7 @@ public class Core {
 				Description += "Adresse / Gebäude: " + Arr1[4] + "\n";
 				Description += "Raum: " + Arr1[5] + "\n";
 				Description += "Anschluss: " + Arr1[6] + "\n";
-				Description += "Aktuelle Konfiguration: " + Arr1[7] + "\n";
+				Description += "Aktuelle Konfiguration: " + Arr1[7];
 			}
 		}
 		return Description;
@@ -248,28 +249,28 @@ public class Core {
 	}
 
 	public static int sendTicket(ArrayList<String> arrLValues) {
+		ArrayList<String> arrLCols=new ArrayList<String>();
+		int iDone=0;
 		AL=null;
 		try {
-			// TODO AL überprüfen
-			AL = dbStatus.getColumnsList("Ticket");
-			AL.remove(0); // id - Autoincrement
-			AL.remove(AL.size() - 2); // Timestamp update
-			AL.remove(AL.size() - 1); // TimeStamp created
+			arrLCols = dbStatus.getColumnsList("Ticket");
+			arrLCols.remove(0); // id - Autoincrement
+			arrLCols.remove(arrLCols.size() - 3); // Solution
+			arrLCols.remove(arrLCols.size() - 2); // Timestamp update
+			arrLCols.remove(arrLCols.size() - 1); // TimeStamp created
+			
 			arrLValues.set(4, sForeignKey(dbStatus, arrLValues.get(4), "HWType","idHW", "HW"));
 			arrLValues.set(5, sForeignKey(dbStatus, arrLValues.get(5), "SWType","idSW", "SW"));
+			arrLValues.add(sForeignKey(dbStatus, "Neu", "Name","idStati", "Stati")); //added Status Neu
 			
-			for (String s:AL){
-				System.out.println(s);
-			}
-			for (String v:arrLValues){
-				System.out.println(v);
-			}
-
+			iDone=dbStatus.insertDataSet("Ticket",
+					arrLCols.toArray(new String[arrLCols.size()]),
+					arrLValues.toArray(new String[arrLValues.size()]));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;
 		}
-		return 1;
+		return iDone;
 	}
 
 	/**
@@ -291,7 +292,6 @@ public class Core {
 			AL = db.getSingleDataSetList("SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE "
 					+ CritCol + "='" + Crit + "'");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			System.out.println("Fehler bei SQL: \n"+
 					"SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE "
 					+ CritCol + "='" + Crit + "'");
@@ -304,4 +304,5 @@ public class Core {
 			return "1";
 		}
 	}
+	
 }

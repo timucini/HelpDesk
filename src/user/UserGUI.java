@@ -3,7 +3,6 @@ package user;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
 import javax.swing.JButton;
@@ -19,12 +18,11 @@ import java.util.ArrayList;
 import javax.swing.ListSelectionModel;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
-import javax.swing.JToolBar;
 import javax.swing.JMenuBar;
 import javax.swing.JTabbedPane;
-import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.SwingConstants;
@@ -73,7 +71,7 @@ public class UserGUI extends JFrame {
 	private static JTextPane txtP_NewIssue = new JTextPane();
 	private static JTextField txt_Raum = new JTextField();
 	private static JTextField txt_Anschluss = new JTextField();
-	private final JScrollPane scrollP_Tickets = new JScrollPane();
+	private final static JScrollPane scrollP_Tickets = new JScrollPane();
 	private final JScrollPane scrollPane_2 = new JScrollPane();
 	private final JScrollPane scrollPane_3 = new JScrollPane();
 	private static JTextPane txtP_Issue = new JTextPane();
@@ -85,6 +83,7 @@ public class UserGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public UserGUI() {
+		setResizable(false);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent arg0) {
@@ -126,6 +125,11 @@ public class UserGUI extends JFrame {
 		mnHilfe.setMnemonic('h');
 
 		menuBar.add(mnHilfe);
+		mntmber.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				do_mntmber_actionPerformed(arg0);
+			}
+		});
 		mntmber.setMnemonic('b');
 
 		mnHilfe.add(mntmber);
@@ -380,7 +384,7 @@ public class UserGUI extends JFrame {
 			cbB_SW.removeAllItems();
 		}
 	}	
-	private void fill_TicketTable(){
+	private static void fill_TicketTable(){
 		if(Core.getTicketsforClient()!=null){
 		table_Tickets = new JTable(Core.Tickets[0].length, Core.Tickets.length);
 		scrollP_Tickets.setViewportView(table_Tickets);
@@ -410,7 +414,7 @@ public class UserGUI extends JFrame {
 			}
 		}
 	}
-	protected void do_table_Tickets_mouseClicked(MouseEvent arg0) {
+	protected static void do_table_Tickets_mouseClicked(MouseEvent arg0) {
 		if(table_Tickets.getSelectedRow()!=-1){
 			try{
 				txtP_Issue.setText(Core.sIssueDescription(Integer.parseInt((String) table_Tickets.getValueAt(table_Tickets.getSelectedRow(),0))));
@@ -441,13 +445,33 @@ public class UserGUI extends JFrame {
 		ArrL.add(txt_Raum.getText());
 		ArrL.add(txt_Anschluss.getText());
 		ArrL.add(sSysInf());
-		/*
-		for (String s:ArrL){
-			System.out.println(s);
-		}
-		*/
-		Core.sendTicket(ArrL);
+
+		if (Core.sendTicket(ArrL)>=1){
+			JOptionPane.showMessageDialog(null, "Ihr Ticket wurde erfolgreich erstellt.");
+			cleanupAndRefresh();
+			panel_Status.grabFocus();
+		}else{
+			JOptionPane.showMessageDialog(null, "Es sind Fehler bei der Erstellung Ihres Tickets aufgetreten. \n"+
+					"Wenden Sie sich bitte telefonisch an den Helpdesk.");
+			panel_direct.grabFocus();
+		};
+		
+		
 	}
+	
+	private static void cleanupAndRefresh(){
+		txt_Name.setText("");
+		txt_phone.setText("");
+		txt_Mail.setText("");
+		cbB_HW.setSelectedItem("");
+		cbB_SW.setSelectedItem("");
+		txtP_NewIssue.getText();
+		txt_Geb.setText("");
+		txt_Raum.setText("");
+		txt_Anschluss.setText("");
+		fill_TicketTable();
+	}
+	
 	
 	private static String sSysInf(){
 		String s="";
@@ -458,4 +482,8 @@ public class UserGUI extends JFrame {
 		return s;
 	}
 	
+	protected void do_mntmber_actionPerformed(ActionEvent arg0) {
+		JOptionPane.showMessageDialog( this, new About(), "About",
+                JOptionPane.PLAIN_MESSAGE );
+	}
 }
