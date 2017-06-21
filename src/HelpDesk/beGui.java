@@ -1,4 +1,5 @@
 package HelpDesk;
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -13,6 +14,7 @@ import java.awt.TextArea;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.awt.event.ActionEvent;
@@ -33,6 +35,7 @@ public class beGui {
 	private final JButton btnAnwenden = new JButton("anwenden");
 	private final JButton btnNewButton = new JButton("zur\u00FCck");
 	private final JTextPane textPane = new JTextPane();
+	private final JLabel label = new JLabel("");
 	
 public beGui() {
 	init();
@@ -86,19 +89,7 @@ private void init() {
 		// TODO Auto-generated catch block
 		e1.printStackTrace();
 	}
-	String idTicket = String.valueOf(comboBox.getSelectedItem());
-    String[][] besch;
-    try {
-	besch = Connection.conHP.getDataSets("SELECT Ticket.Beschreibung FROM db136045x2588076.Ticket WHERE idTicket="+idTicket,false);
-	String result = Arrays
-			  .stream(besch)
-		        .map(Arrays::toString) 
-		        .collect(Collectors.joining(System.lineSeparator()));
-	  textPane.setText(result);
-    } catch (Exception e) {
-	// TODO Auto-generated catch block
-	e.printStackTrace();
-    }
+	comboBox.addItem("Bitte wählen");
 	comboBox_1.addItem("Geöffnet");
 	comboBox_1.addItem("Bearbeitet");
 	comboBox_1.addItem("Geschlossen");
@@ -106,6 +97,9 @@ private void init() {
 	textPane.setBounds(47, 134, 298, 55);
 	
 	bGui.getContentPane().add(textPane);
+	label.setBounds(220, 30, 124, 23);
+	
+	bGui.getContentPane().add(label);
 		
 }
 
@@ -142,14 +136,14 @@ private void init() {
 	}
 	protected void do_comboBox_actionPerformed(ActionEvent arg0) {
 		String idTicket = String.valueOf(comboBox.getSelectedItem());
-	    String[][] besch;
 	try {
-		besch = Connection.conHP.getDataSets("SELECT Ticket.Beschreibung FROM db136045x2588076.Ticket WHERE idTicket="+idTicket,false);
-		String result = Arrays
-				  .stream(besch)
-			        .map(Arrays::toString) 
-			        .collect(Collectors.joining(System.lineSeparator()));
-		  textPane.setText(result);
+		ArrayList besch = Connection.conHP.getSingleDataSetList("SELECT Ticket.Beschreibung FROM db136045x2588076.Ticket WHERE idTicket="+idTicket);
+		String list=Arrays.toString(besch.toArray()).replace("[", "").replace("]", "");
+		textPane.setText(list);
+		ArrayList<String> stat=Connection.conHP.getSingleDataSetList("SELECT Ticket.Status FROM db136045x2588076.Ticket WHERE idTicket="+idTicket);
+		String status=Arrays.toString(stat.toArray()).replace("[", "").replace("]", "");
+		label.setText("Status: "+status);
+		label.setForeground(Color.BLUE);
 	} catch (Exception e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

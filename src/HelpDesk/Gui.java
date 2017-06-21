@@ -57,12 +57,12 @@ public class Gui {
         
 		public void do_btnNewButton_actionPerformed(ActionEvent arg0) {		
 			
-			Connection con=new Connection();
-			
+			Connection.main(null);
 	
 			frame.setVisible(false); 
 			conGui cGui=new conGui();
 			conGui.cGui.setVisible(true);
+			
 	
 	
 	}

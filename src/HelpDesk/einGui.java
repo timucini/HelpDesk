@@ -29,7 +29,6 @@ import java.awt.event.ActionEvent;
 public class einGui {
 	static JFrame eGui=new JFrame();
 	private final JLabel lblEingabeTicket = new JLabel("Eingabe Ticket");
-	private final JTextField textField_1 = new JTextField();
 	private final JTextField textField_2 = new JTextField();
 	private final JComboBox comboBox = new JComboBox();
 	private final JTextArea textArea = new JTextArea();
@@ -53,11 +52,6 @@ public class einGui {
 		lblEingabeTicket.setBounds(23, 27, 127, 28);
 		
 		eGui.getContentPane().add(lblEingabeTicket);
-		textField_1.setColumns(10);
-		textField_1.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Ci-ID", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		textField_1.setBounds(177, 11, 105, 39);
-		
-		eGui.getContentPane().add(textField_1);
 		textField_2.setColumns(10);
 		textField_2.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Mitarbeiter", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		textField_2.setBounds(247, 66, 105, 39);

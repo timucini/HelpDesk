@@ -2,6 +2,7 @@ package HelpDesk;
 
 import javax.swing.JFrame;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -39,6 +40,7 @@ public class statusGui {
 	private final JTable table_1 = new JTable();
 	private final JButton btnZurck_1 = new JButton("zur\u00FCck");
 	
+	
 public statusGui(){
 	init();
 }
@@ -49,6 +51,8 @@ public void init() {
 	lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 14));
 	lblNewLabel.setBounds(89, 11, 101, 22);
 	sGui.add(table_1);
+
+
 	
 	sGui.getContentPane().add(lblNewLabel);
 
@@ -91,6 +95,7 @@ public void init() {
 	dtm.setColumnIdentifiers(header);
 	table_1.setModel(dtm);
 	
+	
 
 	
 	btnZurck_1.addActionListener(new ActionListener() {
@@ -101,17 +106,15 @@ public void init() {
 	btnZurck_1.setBounds(335, 253, 89, 23);
 	
 	sGui.getContentPane().add(btnZurck_1);
-	dtm.addRow(header);
 	for (int i = 0; i < ids.length; i++) {
         dtm.addRow(new Object[] { ids[i], stat[i]}
         );}
-	
 
+	JScrollPane js=new JScrollPane(table_1);
+	js.setBounds(89, 58, 241, 155);
+	js.setVisible(true);
+	sGui.add(js);
 
-        
-	
-	
-	
 	
 	}
 	protected void do_btnZurck_1_actionPerformed(ActionEvent arg0) {

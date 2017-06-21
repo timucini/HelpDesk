@@ -87,11 +87,11 @@ public class conGui {
 		
 		cGui.getContentPane().add(lblDbVerbunden);
 		
-		if(Connection.conHP.isConnected()) {
+
 		lblDbVerbunden.setForeground(Color.GREEN);
 		lblDbVerbunden.setText("DB verbunden");
 		}
-	}
+	
 	protected void do_btnNewButton_actionPerformed(ActionEvent arg0) {
 		cGui.setVisible(false);
 		einGui eGui=new einGui();
