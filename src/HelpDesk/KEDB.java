@@ -107,17 +107,9 @@ public KEDB() {
 			kGui.getContentPane().add(comboBox_2);
 			table_1.setBorder(null);
 			table_1.setBounds(47, 105, 463, 139);
-			JScrollPane js=new JScrollPane();
-			js.setBounds(47, 105, 442, 139);
-			js.setVisible(true);
-			kGui.getContentPane().add(js);
 			
 			kGui.getContentPane().add(table_1);
 			table_2.setBounds(142, 285, 368, 147);
-			JScrollPane js2=new JScrollPane();
-			js.setBounds(142, 285, 368, 147);
-			js.setVisible(true);
-			kGui.getContentPane().add(js2);
 			
 			kGui.getContentPane().add(table_2);
 			String table="`db136045x2588076`.`CIs`";
@@ -183,13 +175,13 @@ public KEDB() {
 	protected void do_comboBox_1_actionPerformed(ActionEvent arg0) throws Exception {
 		String betrof=String.valueOf(comboBox_1.getSelectedItem());
 		DefaultTableModel tb1=new DefaultTableModel(0,0);
-		String header[]=new String[]{"Fehler","Lösungsansatz"};
+		String header[]=new String[]{"Fehler","Lï¿½sungsansatz"};
 		tb1.setColumnIdentifiers(header);
 		table_1.setModel(tb1);
 		tb1.addRow(header);
 		ArrayList<String> fehl=null;
-		fehl=Connection.conKE.getSingleDataSetList("SELECT `Fehler` FROM `db136045x2588052`.`KEDB` WHERE `Betroffen`='"+betrof+"'");
-		ArrayList<String> loes=Connection.conKE.getSingleDataSetList("SELECT `Loesungsvorschlag` FROM `db136045x2588052`.`KEDB` WHERE `Betroffen`='"+betrof+"'");
+		fehl=Connection.conKE.getDataSetsSingleColList("SELECT `Fehler` FROM `db136045x2588052`.`KEDB` WHERE `Betroffen`='"+betrof+"'");
+		ArrayList<String> loes=Connection.conKE.getDataSetsSingleColList("SELECT `Loesungsvorschlag` FROM `db136045x2588052`.`KEDB` WHERE `Betroffen`='"+betrof+"'");
 		String[] fehler=new String[fehl.size()];
 		fehler=fehl.toArray(fehler);
 		String[] loesung=new String[loes.size()];
@@ -210,11 +202,11 @@ public KEDB() {
 	
 	protected void do_comboBox_actionPerformed(ActionEvent e) throws Exception {
 		if(comboBox.getSelectedItem()=="Hardware"){
-				ArrayList<String> meh=Connection.conKE.getSingleDataSetList("SELECT `Betroffen` FROM `db136045x2588052`.`KEDB` WHERE `Hardware`='1'");
+				ArrayList<String> meh=Connection.conKE.getDataSetsSingleColList("SELECT `Betroffen` FROM `db136045x2588052`.`KEDB` WHERE `Hardware`='1'");
 				comboBox_1.setModel(new DefaultComboBoxModel(meh.toArray()));
 		}
 		if(comboBox.getSelectedItem()=="Software") {
-					String[] soft = Connection.conKE.getSingleDataSet("SELECT `Betroffen` FROM `db136045x2588052`.`KEDB` WHERE `Software`='1'");
+					String[] soft = Connection.conKE.getDataSetsSingleCol("SELECT `Betroffen` FROM `db136045x2588052`.`KEDB` WHERE `Software`='1'");
 					comboBox_1.setModel(new javax.swing.DefaultComboBoxModel(soft));
 
 			
@@ -233,8 +225,8 @@ public KEDB() {
 		dtm.addRow(header);
 		ArrayList<String> idT=null;
 		try{
-		idT=Connection.conHP.getSingleDataSetList("SELECT idTicket FROM db136045x2588076.Ticket WHERE CIs_id="+id+";");
-		ArrayList<String> beschreibung=Connection.conHP.getSingleDataSetList("SELECT Beschreibung FROM db136045x2588076.Ticket WHERE CIs_id="+id+";");
+		idT=Connection.conHP.getDataSetsSingleColList("SELECT idTicket FROM db136045x2588076.Ticket WHERE CIs_id="+id+";");
+		ArrayList<String> beschreibung=Connection.conHP.getDataSetsSingleColList("SELECT Beschreibung FROM db136045x2588076.Ticket WHERE CIs_id="+id+";");
 		String[] tickets=new String[idT.size()];
 		tickets=idT.toArray(tickets);
 		String[] beschr=new String[beschreibung.size()];
@@ -243,14 +235,12 @@ public KEDB() {
 			
 	        dtm.addRow(new Object[] { tickets[i], beschr[i]}
 	        );}
+		if (tickets.length==0 && beschr.length==0) {
+			dtm.addRow(new Object[] {"Kein Ticket vorhanden","Leer"});
+		}
 	
 		}
 		catch(SQLException e){
-			idT=null;
-			String leer[]=new String[]{"Keine Tickets vorhanden","leer"};
-			dtm.addRow(leer);
-			
-		
 		
 } 
 }
@@ -282,7 +272,7 @@ public KEDB() {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			JOptionPane.showMessageDialog(kGui, "Lösungsvorschlag eingetragen");
+			JOptionPane.showMessageDialog(kGui, "Lï¿½sungsvorschlag eingetragen");
 			kGui.setVisible(false);
 			conGui.cGui.setVisible(true);
 		
