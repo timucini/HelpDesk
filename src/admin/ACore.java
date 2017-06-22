@@ -1,7 +1,7 @@
 /**
  * 
  */
-package user;
+package admin;
 
 import java.awt.EventQueue;
 import java.sql.SQLException;
@@ -15,9 +15,9 @@ import dbHelper.*;
  * @author Matthias Cohn (565998)
  * @version 2017-06-16
  */
-public class Core {
-	static String sDBConfFile = "user";
-	protected static String[][] SysConf = new String[14][2];
+public class ACore {
+	static String sDBConfFile = "admin";
+	protected static String[][] SysConf = new String[18][2];
 	protected static String[][] Tickets = null;
 
 	static SysInf actSysInf = new SysInf();
@@ -30,7 +30,7 @@ public class Core {
 	/**
 	 * 
 	 */
-	public Core() {
+	public ACore() {
 
 	}
 
@@ -44,7 +44,7 @@ public class Core {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					UserGUI frame = new UserGUI();
+					AdminGUI frame = new AdminGUI();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -52,17 +52,15 @@ public class Core {
 			}
 		});
 	}
-
+	
 	/**
 	 * Autom. laden einer Configuration und erstellen der DB-Verbindung
 	 * @param DBConfFile: String - Name / Pfad zur Configurationsdatei
 	 */
 	private static void doDBAutoConnect(String DBConfFile) {
 		dbConfStatus = loadDBsConf(DBConfFile);
-		dbStatus = dbConSetup(dbConfStatus);
-		// System.out.println("Verbunden mit Status: "+dbConnect(true,
-		// dbStatus));
-		// TODO AutoInitialize der DB-Inhalte im GUI
+		dbStatus =dbConSetup(dbConfStatus);
+
 	}
 
 	/**
@@ -159,7 +157,6 @@ public class Core {
 		return dbStatus.isConnected();
 	}
 
-	
 	/**
 	 * Erstellen eines Arrays mit Systeminformationen
 	 */
@@ -180,18 +177,26 @@ public class Core {
 		SysConf[6][1] = actSysInf.getSysDrive();
 		SysConf[7][0] = "Kapazität Systempartition in MB";
 		SysConf[7][1] = Double.toString(actSysInf.getSysDriveCap());
-		SysConf[8][0] = "Freier Speicherplatz Sys in MB";
+		SysConf[8][0] = "Freier Speicherplatz Sys  in MB";
 		SysConf[8][1] = Double.toString(actSysInf.getSysDriveFree());
-		SysConf[9][0] = "Nutzung Systempartition";
-		SysConf[9][1] = String.valueOf(actSysInf.getSysDriveUsage()) + "%";
-		SysConf[10][0] = "RAM in MB";
-		SysConf[10][1] = "RAM kann nicht ausgelesen werden";
+		SysConf[9][0] = "Nutzung Systempartition in %";
+		SysConf[9][1] = String.valueOf(actSysInf.getSysDriveUsage());
+		SysConf[10][0] = "RAM";
+		SysConf[10][1] = "Manuell eintragen";
 		SysConf[11][0] = "IPv4-Addresse";
 		SysConf[11][1] = actSysInf.getIPv4Addr();
 		SysConf[12][0] = "IPv6-Addresse";
 		SysConf[12][1] = actSysInf.getIPv6Addr();
 		SysConf[13][0] = "MAC";
 		SysConf[13][1] = actSysInf.getMAC();
+		SysConf[14][0] = "Telefon";
+		SysConf[14][1] = "Manuell eintragen";
+		SysConf[15][0] = "Gebaeude";
+		SysConf[15][1] = "Manuell eintragen";
+		SysConf[16][0] = "Raum";
+		SysConf[16][1] = "Manuell eintragen";
+		SysConf[17][0] = "Anschluss";
+		SysConf[17][1] = "Manuell eintragen";
 	}
 
 	/**
@@ -203,106 +208,94 @@ public class Core {
 		return SysConf;
 	}
 
-	public static ArrayList<String> arrLDropDown(String Table, String Col) {
-		ArrayList<String> ArrL = new ArrayList<String>();
-		try {
-			// Da Felder indexiert (Unique) werden dies Alphabetisch zurück gegeben
-			ArrL = dbStatus.getContentOfColumnList(Table, Col);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		return ArrL;
-	}
+	
+	/**
+	 * Erstellen / Updaten einen CI Eintrags in der DB
+	 * @param arrLValues: ArrayList<String> - Liste mit neuen Werten
+	 * @return int: Anzahl der veränderten Datensätze; Negativ: Update von Datensäten
+	 */
+	public static int sendTicket(ArrayList<String> arrLValues) {
+		ArrayList<String> arrLCols = new ArrayList<String>();
+		String sTable = "CIs";
+		int iDone = 0;
+		AL = null;
 
-	public static String[][] getTicketsforClient() {
-		Tickets = null;
-		try {
-			Tickets = dbStatus
-					.getDataSets(
-							"SELECT t.idTicket, t.Created, s.Name, t.Updated " + "FROM Ticket t, Stati s "
-									+ "WHERE t.SendingCI='" + actSysInf.getComputername() + "' AND t.Status=s.idStati",
-							false);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		return Tickets;
-	}
+		if (bDoesExsist(arrLValues.get(0)) == false) {
+			try {
+				arrLCols = dbStatus.getColumnsList(sTable);
+				arrLCols.remove(0); // id - Autoincrement
 
-	public static String sIssueDescription(int iTicketID) {
-		String Description = "";
-		Arr1 = null;
-		try {
-			Arr1 = dbStatus.getSingleDataSet(
-					"SELECT t.Mitarbeiter, h.HWType , s.SWType, t.Beschreibung, t.Gebaeude, t.Raum, t.Anschluss, t.ActSysConfig "
-							+ "FROM Ticket t, HW h, SW s " + "WHERE t.HW=h.idHW AND t.SW=s.idSW AND " + "t.idTicket = "
-							+ iTicketID + ";");
-		} catch (Exception e) {
-			Arr1 = null;
-			e.printStackTrace();
-			return null;
-		}
-		if (Arr1 != null) {
-			Description = "";
-			if (Arr1.length != 8) {
-				for (String s : Arr1) {
-					Description += s + "\n";
-				}
-				;
-			} else {
-				Description += "Gemeldet von: " + Arr1[0] + "\n";
-				Description += "Betroffene Hardware: " + Arr1[1] + "\n";
-				Description += "Betroffene Software: " + Arr1[2] + "\n";
-				Description += "Genaue Beschreibung: " + Arr1[3] + "\n";
-				Description += "Adresse / Gebäude: " + Arr1[4] + "\n";
-				Description += "Raum: " + Arr1[5] + "\n";
-				Description += "Anschluss: " + Arr1[6] + "\n";
-				Description += "Aktuelle Konfiguration: " + Arr1[7];
+				/*
+				 * arrLCols.remove(arrLCols.size() - 3); // Solution
+				 * arrLCols.remove(arrLCols.size() - 2); // Timestamp update
+				 * arrLCols.remove(arrLCols.size() - 1); // TimeStamp created
+				 * 
+				 * arrLValues.set(4, sForeignKey(dbStatus, arrLValues.get(4),
+				 * "HWType","idHW", "HW")); arrLValues.set(5,
+				 * sForeignKey(dbStatus, arrLValues.get(5), "SWType","idSW",
+				 * "SW")); arrLValues.add(sForeignKey(dbStatus, "Neu",
+				 * "Name","idStati", "Stati")); //added Status Neu
+				 */
+				iDone = dbStatus.insertDataSet(sTable, arrLCols.toArray(new String[arrLCols.size()]),
+						arrLValues.toArray(new String[arrLValues.size()]));
+			} catch (Exception e) {
+				e.printStackTrace();
+				return 0;
+			}
+		} else {
+			try {
+				arrLCols = dbStatus.getColumnsList(sTable);
+				arrLCols.remove(0); // id - Autoincrement
+
+				String[][] sCriteria = { { "COMPUTERNAME", arrLValues.get(0) } };
+				iDone = dbStatus.updateDataSet(sTable, buildArr(arrLCols, arrLValues), sCriteria);
+				iDone*=-1;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return 0;
 			}
 		}
-		return Description;
-	}
 
-	public static String sSolution(int iTicketID) {
-		Arr1 = null;
-		try {
-			Arr1 = dbStatus
-					.getSingleDataSet("SELECT s.DoThis FROM Solution s, Ticket t WHERE t.Solution = s.IDSolution");
-		} catch (Exception e) {
-			Arr1 = null;
-			e.printStackTrace();
-			return null;
-		}
-		if (Arr1.length == 1) {
-			return Arr1[0];
-		} else
-			return null;
-	}
-
-	public static int sendTicket(ArrayList<String> arrLValues) {
-		ArrayList<String> arrLCols=new ArrayList<String>();
-		int iDone=0;
-		AL=null;
-		try {
-			arrLCols = dbStatus.getColumnsList("Ticket");
-			arrLCols.remove(0); // id - Autoincrement
-			arrLCols.remove(arrLCols.size() - 3); // Solution
-			arrLCols.remove(arrLCols.size() - 2); // Timestamp update
-			arrLCols.remove(arrLCols.size() - 1); // TimeStamp created
-			
-			arrLValues.set(4, sForeignKey(dbStatus, arrLValues.get(4), "HWType","idHW", "HW"));
-			arrLValues.set(5, sForeignKey(dbStatus, arrLValues.get(5), "SWType","idSW", "SW"));
-			arrLValues.add(sForeignKey(dbStatus, "Neu", "Name","idStati", "Stati")); //added Status Neu
-			
-			iDone=dbStatus.insertDataSet("Ticket",
-					arrLCols.toArray(new String[arrLCols.size()]),
-					arrLValues.toArray(new String[arrLValues.size()]));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return 0;
-		}
 		return iDone;
+	}
+
+	/**
+	 * Prüft ob ein CI bereits in der DB vorhanden ist
+	 * @param sVal: String - Name der CI
+	 * @return true / false;
+	 */
+	private static boolean bDoesExsist(String sVal) {
+		ArrayList<String> arrL = null;
+		try {
+			arrL = dbStatus.getContentOfColumnList("CIs", "COMPUTERNAME");
+		} catch (Exception e) {
+			arrL = null;
+			e.printStackTrace();
+		}
+		if (arrL == null) {
+			return false;
+		} else {
+			if (arrL.contains(sVal)==true){
+			return true;
+			} else{
+				return false;
+			}
+		}
+	}
+
+	/**
+	 * Erstellt ein 2-Dimensionales Array aus den Listen der Spalten und Werte
+	 * @param sCols: ArrayList<String> - Namen der Spalten
+	 * @param sVals: ArrayList<String> - Werte in den Spalten
+	 * @return String[][] - [Spalte][Wert]
+	 */
+	private static String[][]buildArr(ArrayList<String> sCols, ArrayList<String> sVals){
+		String[][] sColContent = new  String[sCols.size()][2];
+			for (int cols=0; cols<=sCols.size()-1;cols++){
+				sColContent[cols][0]=sCols.get(cols);
+				sColContent[cols][1]=sVals.get(cols);
+			}			
+		return sColContent;
 	}
 
 	/**
@@ -318,14 +311,14 @@ public class Core {
 	 *            Name der Spalte in der das Kriterium gesucht wird
 	 * @return int : ForeignKey
 	 */
+	@SuppressWarnings("unused")
 	private static String sForeignKey(DBCon db, String Crit, String CritCol, String PrimKey, String ForeignTable) {
 		AL = null;
 		try {
-			AL = db.getSingleDataSetList("SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE "
-					+ CritCol + "='" + Crit + "'");
+			AL = db.getSingleDataSetList(
+					"SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE " + CritCol + "='" + Crit + "'");
 		} catch (Exception e) {
-			System.out.println("Fehler bei SQL: \n"+
-					"SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE "
+			System.out.println("Fehler bei SQL: \n" + "SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE "
 					+ CritCol + "='" + Crit + "'");
 			AL = null;
 			e.printStackTrace();

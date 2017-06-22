@@ -345,7 +345,7 @@ public class UserGUI extends JFrame {
 		fillcbBoxes(Core.isDbConnected());
 		fill_TicketTable();
 		cmd_send.setEnabled(Core.isDbConnected());
-		// System.out.println(Core.isDbConnected());
+		// System.out.println(ACore.isDbConnected());
 	}
 
 	protected void do_mntmDBTrennen_actionPerformed(ActionEvent e) {
