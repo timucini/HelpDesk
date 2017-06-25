@@ -17,7 +17,7 @@ import dbHelper.*;
  * @version 1.1 (2017-06-25)
  */
 public class Core {
-	static String sDBConfFile = "user";
+	static String sDBConfFile = "admin";
 	protected static String[][] SysConf = new String[14][2];
 	protected static String[][] Tickets = null;
 
@@ -251,7 +251,7 @@ public class Core {
 		Arr1 = null;
 		try {
 			Arr1 = dbStatus.getSingleDataSet(
-					"SELECT t.Mitarbeiter, h.HWType , s.SWType, t.Beschreibung, t.Gebaeude, t.Raum, t.Anschluss, t.ActSysConfig "
+					"SELECT t.Mitarbeiter, h.HWType , s.SWType, t.Beschreibung, t.Gebaeude, t.Raum, t.Anschluss, t.ActSysConfig, t.ActSoftConfig "
 							+ "FROM Ticket t, HW h, SW s " + "WHERE t.HW=h.idHW AND t.SW=s.idSW AND " + "t.idTicket = "
 							+ iTicketID + ";");
 		} catch (Exception e) {
@@ -261,7 +261,7 @@ public class Core {
 		}
 		if (Arr1 != null) {
 			Description = "";
-			if (Arr1.length != 8) {
+			if (Arr1.length != 9) {
 				for (String s : Arr1) {
 					Description += s + "\n";
 				}
@@ -274,7 +274,8 @@ public class Core {
 				Description += "Adresse / Gebäude: " + Arr1[4] + "\n";
 				Description += "Raum: " + Arr1[5] + "\n";
 				Description += "Anschluss: " + Arr1[6] + "\n";
-				Description += "Aktuelle Konfiguration: " + Arr1[7];
+				Description += "Aktuelle Konfiguration: " + "\n"+ Arr1[7]+ "\n";
+				Description += "Aktuelle Software-Konfiguration: "+ "\n" + Arr1[8];
 			}
 		}
 		return Description;
@@ -284,7 +285,8 @@ public class Core {
 		Arr1 = null;
 		try {
 			Arr1 = dbStatus
-					.getSingleDataSet("SELECT s.DoThis FROM Solution s, Ticket t WHERE t.Solution = s.IDSolution");
+					.getSingleDataSet("SELECT t.Solution FROM Ticket t WHERE t.idTicket = "
+							+ iTicketID + ";");
 		} catch (Exception e) {
 			Arr1 = null;
 			e.printStackTrace();
@@ -303,7 +305,9 @@ public class Core {
 		try {
 			arrLCols = dbStatus.getColumnsList("Ticket");
 			arrLCols.remove(0); // id - Autoincrement
-			arrLCols.remove(arrLCols.size() - 3); // Solution
+			arrLCols.remove(arrLCols.size() - 5); // Solution
+			arrLCols.remove(arrLCols.size() - 4); // CI-id
+			arrLCols.remove(arrLCols.size() - 3); // Bearbeiter
 			arrLCols.remove(arrLCols.size() - 2); // Timestamp update
 			arrLCols.remove(arrLCols.size() - 1); // TimeStamp created
 			
