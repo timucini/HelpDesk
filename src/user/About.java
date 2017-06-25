@@ -23,7 +23,7 @@ public class About extends JPanel {
   private JLabel        lblTitle     = new JLabel( "  HelpDesk - User-Interface  "     );
   private JLabel        lblEmpty     = new JLabel( " "                      );
   private JLabel        lblAuthor    = new JLabel( "Author: Matthias Cohn"  );
-  private JLabel        lblVersion   = new JLabel( "Rel. 1.0.0, 2017-06-19" );
+  private JLabel        lblVersion   = new JLabel( "Rel. 1.1.0, 2017-06-25" );
   private JLabel        lblCompany   = new JLabel( "HWR Berlin"             );
   private GridBagLayout layoutMain   = new GridBagLayout();
   private Border        border       = BorderFactory.createEtchedBorder();

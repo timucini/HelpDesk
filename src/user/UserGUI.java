@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+
 import javax.swing.JTable;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -78,6 +79,9 @@ public class UserGUI extends JFrame {
 	private static JTextPane txtP_Solution = new JTextPane();
 	private static JTable table_Tickets;
 	private final JButton cmd_TicketRefresh = new JButton("aktualisieren");
+	private final JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
+	private final JScrollPane scrollP_SW = new JScrollPane();
+	private static JTextPane txtP_SW = new JTextPane();
 
 	/**
 	 * Create the frame.
@@ -143,26 +147,26 @@ public class UserGUI extends JFrame {
 		
 		
 		
-		tabbedPane.setBounds(0, 0, 464, 390);
+		tabbedPane.setBounds(0, 0, 474, 400);
 		
 		contentPane.add(tabbedPane);
 		
 		tabbedPane.addTab("Ticket Status", null, panel_Status, null);
 		panel_Status.setLayout(null);
 		scrollP_Tickets.setBorder(new TitledBorder(null, "Bisherige Tickets", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		scrollP_Tickets.setBounds(0, 0, 459, 110);
+		scrollP_Tickets.setBounds(0, 0, 469, 110);
 		
 		panel_Status.add(scrollP_Tickets);
 
 		scrollPane_2.setBorder(new TitledBorder(null, "Problembeschreibung", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		scrollPane_2.setBounds(0, 110, 459, 110);
+		scrollPane_2.setBounds(0, 110, 469, 110);
 		
 		panel_Status.add(scrollPane_2);
 		txtP_Issue.setText("Kein Ticket ausgewählt");
 		
 		scrollPane_2.setViewportView(txtP_Issue);
 		scrollPane_3.setBorder(new TitledBorder(null, "L\u00F6sung", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		scrollPane_3.setBounds(0, 220, 459, 110);
+		scrollPane_3.setBounds(0, 220, 469, 110);
 		
 		panel_Status.add(scrollPane_3);
 		txtP_Solution.setEditable(false);
@@ -174,7 +178,7 @@ public class UserGUI extends JFrame {
 				do_cmd_TicketRefresh_actionPerformed(arg0);
 			}
 		});
-		cmd_TicketRefresh.setBounds(315, 335, 140, 25);
+		cmd_TicketRefresh.setBounds(325, 335, 140, 25);
 		panel_Status.add(cmd_TicketRefresh);
 		cmd_TicketRefresh.setIcon(new ImageIcon(UserGUI.class.getResource("/com/sun/javafx/scene/web/skin/Redo_16x16_JFX.png")));
 		
@@ -261,11 +265,29 @@ public class UserGUI extends JFrame {
 
 		lbl_Info.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lbl_Info.setBorder(new TitledBorder(null, "Info", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		lbl_Info.setBounds(10, 11, 439, 88);
+		lbl_Info.setBounds(10, 5, 449, 76);
 		
 		panel_direct.add(lbl_Info);
-		scrollP_SysInf.setBounds(10, 110, 439, 241);
-		panel_direct.add(scrollP_SysInf);
+		tabbedPane_1.setBounds(0, 85, 469, 287);
+		
+		panel_direct.add(tabbedPane_1);
+		tm_SysInf = new JTable(Core.SysConf[0].length, Core.SysConf.length);
+		tabbedPane_1.addTab("System", null, scrollP_SysInf, null);
+		
+		scrollP_SysInf.setViewportView(tm_SysInf);
+		tm_SysInf.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		tm_SysInf.setColumnSelectionAllowed(false);
+		tm_SysInf.setCellSelectionEnabled(true);
+		tm_SysInf.setRowSelectionAllowed(true);
+		// https://www.java-forum.org/thema/jtable-spaltennamen-aendern.2266/
+		tm_SysInf.setModel(new DefaultTableModel(new Object[Core.SysConf.length][Core.SysConf[0].length],
+				new String[] { "Eigenschaft", "Wert" }));
+		
+		tabbedPane_1.addTab("Software", null, scrollP_SW, null);
+		txtP_SW.setText("Nur auf Windows möglich");
+		
+		scrollP_SW.setViewportView(txtP_SW);
 
 		/*
 		 * modTable(); getTable();
@@ -299,18 +321,13 @@ public class UserGUI extends JFrame {
 
 		scrollP_SysInf.setBorder(new TitledBorder(null, "Aktuelle Systemkonfiguration", TitledBorder.LEADING,
 				TitledBorder.TOP, null, null));
-		tm_SysInf = new JTable(Core.SysConf[0].length, Core.SysConf.length);
-
-		scrollP_SysInf.setViewportView(tm_SysInf);
-		tm_SysInf.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-		tm_SysInf.setColumnSelectionAllowed(false);
-		tm_SysInf.setCellSelectionEnabled(true);
-		tm_SysInf.setRowSelectionAllowed(true);
-		// https://www.java-forum.org/thema/jtable-spaltennamen-aendern.2266/
-		tm_SysInf.setModel(new DefaultTableModel(new Object[Core.SysConf.length][Core.SysConf[0].length],
-				new String[] { "Eigenschaft", "Wert" }));
 		modTable(Core.SysConf); // Tabelle füllen
+		fillSW(Core.getInstalledWinSW());
+	}
+	
+	
+	private static void fillSW(String sSW){
+		txtP_SW.setText(sSW);
 	}
 
 	public static void modTable(String[][] sArr) {
@@ -445,7 +462,7 @@ public class UserGUI extends JFrame {
 		ArrL.add(txt_Raum.getText());
 		ArrL.add(txt_Anschluss.getText());
 		ArrL.add(sSysInf());
-
+		ArrL.add(txtP_SW.getText());
 		if (Core.sendTicket(ArrL)>=1){
 			JOptionPane.showMessageDialog(null, "Ihr Ticket wurde erfolgreich erstellt.");
 			cleanupAndRefresh();

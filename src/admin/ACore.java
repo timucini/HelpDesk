@@ -13,7 +13,7 @@ import dbHelper.*;
 
 /**
  * @author Matthias Cohn (565998)
- * @version 2017-06-16
+ * @version 1.1 (2017-06-25)
  */
 public class ACore {
 	static String sDBConfFile = "admin";
@@ -197,6 +197,18 @@ public class ACore {
 		SysConf[16][1] = "Manuell eintragen";
 		SysConf[17][0] = "Anschluss";
 		SysConf[17][1] = "Manuell eintragen";
+	}
+	
+	public static String getInstalledWinSW(){
+		String sSW="";
+		if (actSysInf.getOS().contains("Windows")){
+			for (String s:actSysInf.arrWinSoftwareList()){
+				sSW+=s+"\n";
+			};
+		}else{		
+		sSW = "Nur bei Windows-Systemen automatisch";
+		}
+		return sSW;
 	}
 
 	/**

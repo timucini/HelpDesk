@@ -22,7 +22,13 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextPane;
 
+/**
+ * @author Matthias Cohn (565998)
+ * @version 1.1 (2017-06-25)
+ */
 public class AdminGUI extends JFrame {
 
 	/**
@@ -42,6 +48,9 @@ public class AdminGUI extends JFrame {
 	private final JMenuItem mntmDBVerbinden = new JMenuItem("verbinden");
 	private final JMenuItem mntmDBTrennen = new JMenuItem("trennen");
 	private final JButton cmd_send = new JButton("PC registieren");
+	private final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+	private final JScrollPane scrollP_SW = new JScrollPane();
+	private static JTextPane txtP_SW = new JTextPane();
 
 	/**
 	 * Create the frame.
@@ -104,8 +113,26 @@ public class AdminGUI extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		scrollP_SysInf.setBounds(0, 0, 474, 300);
-		contentPane.add(scrollP_SysInf);
+		tabbedPane.setBounds(0, 0, 474, 300);
+		
+		contentPane.add(tabbedPane);
+		tm_SysInf = new JTable(ACore.SysConf[0].length, ACore.SysConf.length);
+		tabbedPane.addTab("System", null, scrollP_SysInf, null);
+		scrollP_SysInf.setViewportView(tm_SysInf);
+		tm_SysInf.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+				tm_SysInf.setColumnSelectionAllowed(false);
+				tm_SysInf.setCellSelectionEnabled(true);
+				tm_SysInf.setRowSelectionAllowed(true);
+				
+				// https://www.java-forum.org/thema/jtable-spaltennamen-aendern.2266/
+				tm_SysInf.setModel(new DefaultTableModel(new Object[ACore.SysConf.length][ACore.SysConf[0].length],
+						new String[] { "Eigenschaft", "Wert" }));
+				
+				tabbedPane.addTab("Software", null, scrollP_SW, null);
+				txtP_SW.setText("Nur auf Windows möglich");
+				
+				scrollP_SW.setViewportView(txtP_SW);
 		cmd_send.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				do_cmd_send_actionPerformed(arg0);
@@ -126,20 +153,14 @@ public class AdminGUI extends JFrame {
 
 		scrollP_SysInf.setBorder(new TitledBorder(null, "Aktuelle Systemkonfiguration", TitledBorder.LEADING,
 				TitledBorder.TOP, null, null));
-		tm_SysInf = new JTable(ACore.SysConf[0].length, ACore.SysConf.length);
-		scrollP_SysInf.setViewportView(tm_SysInf);
-		tm_SysInf.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-		tm_SysInf.setColumnSelectionAllowed(false);
-		tm_SysInf.setCellSelectionEnabled(true);
-		tm_SysInf.setRowSelectionAllowed(true);
-		
-		// https://www.java-forum.org/thema/jtable-spaltennamen-aendern.2266/
-		tm_SysInf.setModel(new DefaultTableModel(new Object[ACore.SysConf.length][ACore.SysConf[0].length],
-				new String[] { "Eigenschaft", "Wert" }));
 		modTable(ACore.SysConf); // Tabelle füllen
+		fillSW(ACore.getInstalledWinSW());
 	}
 
+	private static void fillSW(String sSW){
+		txtP_SW.setText(sSW);
+	}
+	
 	public static void modTable(String[][] sArr) {
 		for (int x = 0; x <= sArr.length - 1; x++) {
 			for (int y = 0; y <= sArr[x].length - 1; y++) {
@@ -203,7 +224,8 @@ public class AdminGUI extends JFrame {
 				}
 			}
 		}
-		if (arrL.size() == 18) {
+		arrL.add(txtP_SW.getText());
+		if (arrL.size() == 19) {
 			return arrL;
 		} else {
 			return null;

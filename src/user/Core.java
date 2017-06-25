@@ -1,4 +1,5 @@
 /**
+//TODO Structure Check
  * 
  */
 package user;
@@ -13,7 +14,7 @@ import dbHelper.*;
 
 /**
  * @author Matthias Cohn (565998)
- * @version 2017-06-16
+ * @version 1.1 (2017-06-25)
  */
 public class Core {
 	static String sDBConfFile = "user";
@@ -194,6 +195,7 @@ public class Core {
 		SysConf[13][1] = actSysInf.getMAC();
 	}
 
+	
 	/**
 	 * lädt die Systemkonfiguration und gibt diese als Array zurück
 	 * @return String[][] - Syteminformationen
@@ -201,6 +203,20 @@ public class Core {
 	public static String[][] getSysInf() {
 		loadSysInf();
 		return SysConf;
+	}
+	
+	
+	public static String getInstalledWinSW(){
+		String sSW="";
+		if (actSysInf.getOS().contains("Windows")){
+			for (String s:actSysInf.arrWinSoftwareList()){
+				sSW+=s+"\n";
+			};
+			
+		}else{		
+		sSW = "Nur bei Windows-Systemen automatisch";
+		}
+		return sSW;
 	}
 
 	public static ArrayList<String> arrLDropDown(String Table, String Col) {
