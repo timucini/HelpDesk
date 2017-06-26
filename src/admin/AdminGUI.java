@@ -14,7 +14,6 @@ import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-
 import javax.swing.ListSelectionModel;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
@@ -27,7 +26,7 @@ import javax.swing.JTextPane;
 
 /**
  * @author Matthias Cohn (565998)
- * @version 1.1 (2017-06-25)
+ * @version 1.2 (2017-06-26)
  */
 public class AdminGUI extends JFrame {
 
@@ -114,25 +113,25 @@ public class AdminGUI extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		tabbedPane.setBounds(0, 0, 474, 300);
-		
+
 		contentPane.add(tabbedPane);
 		tm_SysInf = new JTable(ACore.SysConf[0].length, ACore.SysConf.length);
 		tabbedPane.addTab("System", null, scrollP_SysInf, null);
 		scrollP_SysInf.setViewportView(tm_SysInf);
 		tm_SysInf.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
-				tm_SysInf.setColumnSelectionAllowed(false);
-				tm_SysInf.setCellSelectionEnabled(true);
-				tm_SysInf.setRowSelectionAllowed(true);
-				
-				// https://www.java-forum.org/thema/jtable-spaltennamen-aendern.2266/
-				tm_SysInf.setModel(new DefaultTableModel(new Object[ACore.SysConf.length][ACore.SysConf[0].length],
-						new String[] { "Eigenschaft", "Wert" }));
-				
-				tabbedPane.addTab("Software", null, scrollP_SW, null);
-				txtP_SW.setText("Nur auf Windows möglich");
-				
-				scrollP_SW.setViewportView(txtP_SW);
+
+		tm_SysInf.setColumnSelectionAllowed(false);
+		tm_SysInf.setCellSelectionEnabled(true);
+		tm_SysInf.setRowSelectionAllowed(true);
+
+		// https://www.java-forum.org/thema/jtable-spaltennamen-aendern.2266/
+		tm_SysInf.setModel(new DefaultTableModel(new Object[ACore.SysConf.length][ACore.SysConf[0].length],
+				new String[] { "Eigenschaft", "Wert" }));
+
+		tabbedPane.addTab("Software", null, scrollP_SW, null);
+		txtP_SW.setText("Nur auf Windows möglich");
+
+		scrollP_SW.setViewportView(txtP_SW);
 		cmd_send.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				do_cmd_send_actionPerformed(arg0);
@@ -157,10 +156,10 @@ public class AdminGUI extends JFrame {
 		fillSW(ACore.getInstalledWinSW());
 	}
 
-	private static void fillSW(String sSW){
+	private static void fillSW(String sSW) {
 		txtP_SW.setText(sSW);
 	}
-	
+
 	public static void modTable(String[][] sArr) {
 		for (int x = 0; x <= sArr.length - 1; x++) {
 			for (int y = 0; y <= sArr[x].length - 1; y++) {
@@ -170,9 +169,9 @@ public class AdminGUI extends JFrame {
 	}
 
 	@SuppressWarnings("unused")
-	
+
 	public static ArrayList<String> getTable() {
-		String sValue="";
+		String sValue = "";
 		tm_SysInf.selectAll();
 		ArrayList<String> arrL = new ArrayList<String>();
 		for (int x = 1; x <= tm_SysInf.getColumnCount() - 1; x++) {
@@ -232,6 +231,11 @@ public class AdminGUI extends JFrame {
 		}
 	}
 
+	// ================================================================
+	/**
+	 * 
+	 * @param con
+	 */
 	private static void updatelbl(boolean con) {
 		if (con == true) {
 			lbl_isConnected.setForeground(Color.GREEN);
@@ -242,17 +246,26 @@ public class AdminGUI extends JFrame {
 		}
 	}
 
+	/**
+	 * 
+	 * @param arg0
+	 */
 	protected void do_mntmDBVerbinden_actionPerformed(ActionEvent arg0) {
-		updatelbl(ACore.dbConnect(true, ACore.dbStatus));
-		cmd_send.setEnabled(ACore.isDbConnected());
-
+		this.repaint();
+		if (ACore.dbConnect(true, ACore.dbStatus)) {
+			updatelbl(ACore.isDbConnected());
+			cmd_send.setEnabled(ACore.isDbConnected());
+		}
 		// System.out.println(ACore.isDbConnected());
 	}
 
+	// ====================================================================
 	protected void do_mntmDBTrennen_actionPerformed(ActionEvent e) {
-		updatelbl(ACore.dbConnect(false, ACore.dbStatus));
-
-		cmd_send.setEnabled(ACore.isDbConnected());
+		this.repaint();
+		if (ACore.dbConnect(false, ACore.dbStatus)) {
+			updatelbl(ACore.dbConnect(false, ACore.dbStatus));
+			cmd_send.setEnabled(ACore.isDbConnected());
+		}
 	}
 
 	protected void do_this_windowClosing(WindowEvent arg0) {

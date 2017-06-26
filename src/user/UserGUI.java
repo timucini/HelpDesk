@@ -358,17 +358,26 @@ public class UserGUI extends JFrame {
 	}
 	
 	protected void do_mntmDBVerbinden_actionPerformed(ActionEvent arg0) {
-		updatelbl(Core.dbConnect(true,Core.dbStatus));
-		fillcbBoxes(Core.isDbConnected());
-		fill_TicketTable();
-		cmd_send.setEnabled(Core.isDbConnected());
-		// System.out.println(ACore.isDbConnected());
+		// GUI muss neu gepaintet werden, damit aktuelle DBCon von der Core übernommen wird!!!!
+		this.repaint();
+		
+		if (Core.dbConnect(true,Core.dbStatus)){
+			updatelbl(Core.isDbConnected());
+			fillcbBoxes(Core.isDbConnected());
+			fill_TicketTable();
+			cmd_send.setEnabled(Core.isDbConnected());
+			// System.out.println(ACore.isDbConnected());
+		}
 	}
 
 	protected void do_mntmDBTrennen_actionPerformed(ActionEvent e) {
-		updatelbl(Core.dbConnect(false,Core.dbStatus));
-		fillcbBoxes(Core.isDbConnected());
-		cmd_send.setEnabled(Core.isDbConnected());
+		// GUI muss neu gepaintet werden, damit aktuelle DBCon von der Core übernommen wird!!!!
+		this.repaint();
+		if (Core.dbConnect(false,Core.dbStatus)==false){
+			updatelbl(Core.dbConnect(false,Core.dbStatus));
+			fillcbBoxes(Core.isDbConnected());
+			cmd_send.setEnabled(Core.isDbConnected());
+		}
 	}
 
 	protected void do_this_windowClosing(WindowEvent arg0) {

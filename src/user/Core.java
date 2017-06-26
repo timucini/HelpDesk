@@ -1,36 +1,33 @@
-/**
-//TODO Structure Check
- * 
- */
+
 package user;
 
 import java.awt.EventQueue;
 import java.sql.SQLException;
-
 import sysInf.*;
 import java.util.ArrayList;
-
+import javax.swing.JOptionPane;
+import dbIntegrity.DBCheck;
 import dbHelper.*;
 
 /**
  * @author Matthias Cohn (565998)
- * @version 1.1 (2017-06-25)
+ * @version 1.2 (2017-06-26)
  */
 public class Core {
 	static String sDBConfFile = "admin";
-	protected static String[][] SysConf = new String[14][2];
+	final static String sExpectedSchema="Helpdesk"; // Ticket / Helpdesk / KEDB
+ 	protected static String[][] SysConf = new String[14][2];
 	protected static String[][] Tickets = null;
 
 	static SysInf actSysInf = new SysInf();
 	static dbHelper.ConfigLoader dbConfStatus, dbConfHD;
 	static dbHelper.DBCon dbStatus, dbHD;
+	static boolean bDBisInteger = false;
 	static ArrayList<String> AL = new ArrayList<String>();
 	static String[] Arr1 = null;
 	static String[][] Arr2 = null;
 
-	/**
-	 * 
-	 */
+
 	public Core() {
 
 	}
@@ -53,31 +50,36 @@ public class Core {
 			}
 		});
 	}
+	
 
 	/**
 	 * Autom. laden einer Configuration und erstellen der DB-Verbindung
-	 * @param DBConfFile: String - Name / Pfad zur Configurationsdatei
+	 * 
+	 * @param DBConfFile:
+	 *            String - Name / Pfad zur Configurationsdatei
 	 */
 	private static void doDBAutoConnect(String DBConfFile) {
 		dbConfStatus = loadDBsConf(DBConfFile);
 		dbStatus = dbConSetup(dbConfStatus);
-		// System.out.println("Verbunden mit Status: "+dbConnect(true,
-		// dbStatus));
-		// TODO AutoInitialize der DB-Inhalte im GUI
 	}
 
 	/**
 	 * Laden einer Datenbankconfiguration anhand einer Configurationsfile
-	 * @param DBConfFile: Name / Pfad zur Configurationsdatei
+	 * 
+	 * @param DBConfFile:
+	 *            Name / Pfad zur Configurationsdatei
 	 * @return Datenbankconfigruation
 	 */
 	public static ConfigLoader loadDBsConf(String DBConfFile) {
 		// https://www.java-forum.org/thema/aktuellen-pfad-der-anwendung-ermitteln.21044/
 		dbHelper.ConfigLoader dbConf = new ConfigLoader();
-		String working_dir = System.getProperty("user.dir");
-		working_dir += "\\" + DBConfFile + ".cfg"; // preselect file
+		String working_dir = "";
+		if (DBConfFile != "") {
+			working_dir = System.getProperty("user.dir");
+			working_dir += "\\" + DBConfFile + ".cfg"; // preselect file
+		}
 		try {
-			dbConf.setsFilePath(working_dir);
+			dbConf.setsFilePath(working_dir, "Wählen Sie die Konfiguration für "+sExpectedSchema );
 		} catch (Exception e) {
 			dbConf.clearConfig(false);
 			try {
@@ -96,7 +98,9 @@ public class Core {
 
 	/**
 	 * Eintichten einer DB-Verbindung anhand einer DB-Configuration
-	 * @param dbConf: Datenbankconfiguration
+	 * 
+	 * @param dbConf:
+	 *            Datenbankconfiguration
 	 * @return Datenbankverbindung
 	 */
 	public static DBCon dbConSetup(ConfigLoader dbConf) {
@@ -124,43 +128,76 @@ public class Core {
 	}
 
 	/**
+	 * Überprüft ob das erwartete DB-Schema mit der Datenbank hinter der DB-Konfiguration
+	 * übereinstimmt
+	 * @return
+	 */
+	private static boolean bDBOK() {
+		// integritätscheck:
+		DBCheck dbcCheck=new DBCheck(dbStatus, sExpectedSchema);
+		int iOK = dbcCheck.iDBIsInteger();
+		System.out.println("Datenbankintegrität: (-1: Fehler; 0:nicht Integer; 1:Integer): " + iOK);
+		if (iOK != 1) {
+			//dbStatus = null;
+			JOptionPane.showMessageDialog(null,
+					"Die mit der Konfiguration verbundene Datenbank entspricht nicht der erwarteten Struktur / Inhalt. \n"
+							+ "Bitte wählen Sie die richtige Konfiguarions-Datei und verbinden Sie sich erneut.");
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	/**
 	 * Connect / Disconect zur DB und prüft ob verbindung steht
-	 * @param bDoConnect boolean - connect (true), disconnect (false)
-	 * @param dbCon: Datenbankverbindung
+	 * 
+	 * @param bDoConnect
+	 *            boolean - connect (true), disconnect (false)
+	 * @param dbCon:
+	 *            Datenbankverbindung
 	 * @return boolean: status der DB-Verbindung
 	 */
 	public static boolean dbConnect(boolean bDoConnect, DBCon dbCon) {
-		if (bDoConnect == true) {
-			try {
-				dbCon.connect();
-				System.out.println("Verbunden mit DB");
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("Datenbankverbindung nicht möglich");
-				return false;
+		if (bDBOK()) {
+			if (bDoConnect == true) {
+				try {
+					dbCon.connect();
+					System.out.println("Verbunden mit DB");
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("Datenbankverbindung nicht möglich");
+					return false;
+				}
+			} else {
+				try {
+					dbCon.disconnect();
+					System.out.println("Datenbankverbindung erfolgreich getrennt");
+				} catch (SQLException e) {
+					e.printStackTrace();
+					System.out.println("Trennen der Datenbankverbindung nicht möglich");
+					return true;
+				}
 			}
+			return dbCon.isConnected();
 		} else {
-			try {
-				dbCon.disconnect();
-				System.out.println("Datenbankverbindung erfolgreich getrennt");
-			} catch (SQLException e) {
-				e.printStackTrace();
-				System.out.println("Trennen der Datenbankverbindung nicht möglich");
-				return true;
-			}
+			dbConfStatus.clearConfig(false);
+			doDBAutoConnect("");
+			return false;
 		}
-		return dbCon.isConnected();
 	}
 
 	/**
 	 * Prüft ob DB-Verbindung besteht
+	 * 
 	 * @return true / false
 	 */
 	public static boolean isDbConnected() {
+		if (dbStatus == null) {
+			return false;
+		}
 		return dbStatus.isConnected();
 	}
 
-	
 	/**
 	 * Erstellen eines Arrays mit Systeminformationen
 	 */
@@ -195,26 +232,26 @@ public class Core {
 		SysConf[13][1] = actSysInf.getMAC();
 	}
 
-	
 	/**
 	 * lädt die Systemkonfiguration und gibt diese als Array zurück
+	 * 
 	 * @return String[][] - Syteminformationen
 	 */
 	public static String[][] getSysInf() {
 		loadSysInf();
 		return SysConf;
 	}
-	
-	
-	public static String getInstalledWinSW(){
-		String sSW="";
-		if (actSysInf.getOS().contains("Windows")){
-			for (String s:actSysInf.arrWinSoftwareList()){
-				sSW+=s+"\n";
-			};
-			
-		}else{		
-		sSW = "Nur bei Windows-Systemen automatisch";
+
+	public static String getInstalledWinSW() {
+		String sSW = "";
+		if (actSysInf.getOS().contains("Windows")) {
+			for (String s : actSysInf.arrWinSoftwareList()) {
+				sSW += s + "\n";
+			}
+			;
+
+		} else {
+			sSW = "Nur bei Windows-Systemen automatisch";
 		}
 		return sSW;
 	}
@@ -222,7 +259,8 @@ public class Core {
 	public static ArrayList<String> arrLDropDown(String Table, String Col) {
 		ArrayList<String> ArrL = new ArrayList<String>();
 		try {
-			// Da Felder indexiert (Unique) werden dies Alphabetisch zurück gegeben
+			// Da Felder indexiert (Unique) werden dies Alphabetisch zurück
+			// gegeben
 			ArrL = dbStatus.getContentOfColumnList(Table, Col);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -274,8 +312,8 @@ public class Core {
 				Description += "Adresse / Gebäude: " + Arr1[4] + "\n";
 				Description += "Raum: " + Arr1[5] + "\n";
 				Description += "Anschluss: " + Arr1[6] + "\n";
-				Description += "Aktuelle Konfiguration: " + "\n"+ Arr1[7]+ "\n";
-				Description += "Aktuelle Software-Konfiguration: "+ "\n" + Arr1[8];
+				Description += "Aktuelle Konfiguration: " + "\n" + Arr1[7] + "\n";
+				Description += "Aktuelle Software-Konfiguration: " + "\n" + Arr1[8];
 			}
 		}
 		return Description;
@@ -284,9 +322,7 @@ public class Core {
 	public static String sSolution(int iTicketID) {
 		Arr1 = null;
 		try {
-			Arr1 = dbStatus
-					.getSingleDataSet("SELECT t.Solution FROM Ticket t WHERE t.idTicket = "
-							+ iTicketID + ";");
+			Arr1 = dbStatus.getSingleDataSet("SELECT t.Solution FROM Ticket t WHERE t.idTicket = " + iTicketID + ";");
 		} catch (Exception e) {
 			Arr1 = null;
 			e.printStackTrace();
@@ -299,9 +335,9 @@ public class Core {
 	}
 
 	public static int sendTicket(ArrayList<String> arrLValues) {
-		ArrayList<String> arrLCols=new ArrayList<String>();
-		int iDone=0;
-		AL=null;
+		ArrayList<String> arrLCols = new ArrayList<String>();
+		int iDone = 0;
+		AL = null;
 		try {
 			arrLCols = dbStatus.getColumnsList("Ticket");
 			arrLCols.remove(0); // id - Autoincrement
@@ -310,13 +346,14 @@ public class Core {
 			arrLCols.remove(arrLCols.size() - 3); // Bearbeiter
 			arrLCols.remove(arrLCols.size() - 2); // Timestamp update
 			arrLCols.remove(arrLCols.size() - 1); // TimeStamp created
-			
-			arrLValues.set(4, sForeignKey(dbStatus, arrLValues.get(4), "HWType","idHW", "HW"));
-			arrLValues.set(5, sForeignKey(dbStatus, arrLValues.get(5), "SWType","idSW", "SW"));
-			arrLValues.add(sForeignKey(dbStatus, "Neu", "Name","idStati", "Stati")); //added Status Neu
-			
-			iDone=dbStatus.insertDataSet("Ticket",
-					arrLCols.toArray(new String[arrLCols.size()]),
+
+			arrLValues.set(4, sForeignKey(dbStatus, arrLValues.get(4), "HWType", "idHW", "HW"));
+			arrLValues.set(5, sForeignKey(dbStatus, arrLValues.get(5), "SWType", "idSW", "SW"));
+			arrLValues.add(sForeignKey(dbStatus, "Neu", "Name", "idStati", "Stati")); // added
+																						// Status
+																						// Neu
+
+			iDone = dbStatus.insertDataSet("Ticket", arrLCols.toArray(new String[arrLCols.size()]),
 					arrLValues.toArray(new String[arrLValues.size()]));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -341,11 +378,10 @@ public class Core {
 	private static String sForeignKey(DBCon db, String Crit, String CritCol, String PrimKey, String ForeignTable) {
 		AL = null;
 		try {
-			AL = db.getSingleDataSetList("SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE "
-					+ CritCol + "='" + Crit + "'");
+			AL = db.getSingleDataSetList(
+					"SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE " + CritCol + "='" + Crit + "'");
 		} catch (Exception e) {
-			System.out.println("Fehler bei SQL: \n"+
-					"SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE "
+			System.out.println("Fehler bei SQL: \n" + "SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE "
 					+ CritCol + "='" + Crit + "'");
 			AL = null;
 			e.printStackTrace();
@@ -356,5 +392,5 @@ public class Core {
 			return "1";
 		}
 	}
-	
+
 }

@@ -5,18 +5,19 @@ package admin;
 
 import java.awt.EventQueue;
 import java.sql.SQLException;
-
 import sysInf.*;
 import java.util.ArrayList;
-
+import javax.swing.JOptionPane;
 import dbHelper.*;
+import dbIntegrity.DBCheck;
 
 /**
  * @author Matthias Cohn (565998)
- * @version 1.1 (2017-06-25)
+ * @version 1.2 (2017-06-26)
  */
 public class ACore {
-	static String sDBConfFile = "admin";
+	static String sDBConfFile = "user";
+	final static String sExpectedSchema="Helpdesk"; // Ticket / Helpdesk / KEDB
 	protected static String[][] SysConf = new String[18][2];
 	protected static String[][] Tickets = null;
 
@@ -74,7 +75,7 @@ public class ACore {
 		String working_dir = System.getProperty("user.dir");
 		working_dir += "\\" + DBConfFile + ".cfg"; // preselect file
 		try {
-			dbConf.setsFilePath(working_dir);
+			dbConf.setsFilePath(working_dir, "Wählen Sie die Konfiguration für "+sExpectedSchema );
 		} catch (Exception e) {
 			dbConf.clearConfig(false);
 			try {
@@ -119,6 +120,27 @@ public class ACore {
 		}
 		return dbCon;
 	}
+	
+	/**
+	 * Überprüft ob das erwartete DB-Schema mit der Datenbank hinter der DB-Konfiguration
+	 * übereinstimmt
+	 * @return
+	 */
+	private static boolean bDBOK() {
+		// integritätscheck:
+		DBCheck dbcCheck=new DBCheck(dbStatus, sExpectedSchema);
+		int iOK = dbcCheck.iDBIsInteger();
+		System.out.println("Datenbankintegrität: (-1: Fehler; 0:nicht Integer; 1:Integer): " + iOK);
+		if (iOK != 1) {
+			//dbStatus = null;
+			JOptionPane.showMessageDialog(null,
+					"Die mit der Konfiguration verbundene Datenbank entspricht nicht der erwarteten Struktur / Inhalt. \n"
+							+ "Bitte wählen Sie die richtige Konfiguarions-Datei und verbinden Sie sich erneut.");
+			return false;
+		} else {
+			return true;
+		}
+	}
 
 	/**
 	 * Connect / Disconect zur DB und prüft ob verbindung steht
@@ -127,27 +149,34 @@ public class ACore {
 	 * @return boolean: status der DB-Verbindung
 	 */
 	public static boolean dbConnect(boolean bDoConnect, DBCon dbCon) {
-		if (bDoConnect == true) {
-			try {
-				dbCon.connect();
-				System.out.println("Verbunden mit DB");
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("Datenbankverbindung nicht möglich");
-				return false;
+		if (bDBOK()) {
+			if (bDoConnect == true) {
+				try {
+					dbCon.connect();
+					System.out.println("Verbunden mit DB");
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("Datenbankverbindung nicht möglich");
+					return false;
+				}
+			} else {
+				try {
+					dbCon.disconnect();
+					System.out.println("Datenbankverbindung erfolgreich getrennt");
+				} catch (SQLException e) {
+					e.printStackTrace();
+					System.out.println("Trennen der Datenbankverbindung nicht möglich");
+					return true;
+				}
 			}
+			return dbCon.isConnected();
 		} else {
-			try {
-				dbCon.disconnect();
-				System.out.println("Datenbankverbindung erfolgreich getrennt");
-			} catch (SQLException e) {
-				e.printStackTrace();
-				System.out.println("Trennen der Datenbankverbindung nicht möglich");
-				return true;
-			}
+			dbConfStatus.clearConfig(false);
+			doDBAutoConnect("");
+			return false;
 		}
-		return dbCon.isConnected();
 	}
+
 
 	/**
 	 * Prüft ob DB-Verbindung besteht
