@@ -204,6 +204,7 @@ public class EingabeGui {
 				String[] hardware = Connection.conHP.getContentOfColumn(tableHW, columnHW);
 				List<String> listHardware=new ArrayList<String>(Arrays.asList(hardware));
 				listHardware.removeAll(Collections.singleton(null));
+				listHardware.removeAll(Collections.singleton(""));
 				String[] hard=listHardware.toArray(new String[listHardware.size()]);
 				cBetrof.setModel(new javax.swing.DefaultComboBoxModel(hard));
 			
@@ -217,6 +218,7 @@ public class EingabeGui {
 				String[] software = Connection.conHP.getContentOfColumn(tableSW, columnSW);
 				List<String> listSoftware=new ArrayList<String>(Arrays.asList(software));
 				listSoftware.removeAll(Collections.singleton(null));
+				listSoftware.removeAll(Collections.singleton(""));
 				String[] soft=listSoftware.toArray(new String[listSoftware.size()]);
 				cBetrof.setModel(new javax.swing.DefaultComboBoxModel(soft));
 				

@@ -28,6 +28,8 @@ import javax.swing.border.TitledBorder;
 import com.mysql.jdbc.Statement;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 /**
  * @author Timur Burkholz (562205)
@@ -48,6 +50,7 @@ public class BearbeitungGui {
 	private final JComboBox cNeueTicket = new JComboBox();
 	private final JComboBox BearbeiterBox = new JComboBox();
 	private final JButton btnEin = new JButton("Einpflegen");
+	private final JSeparator separator = new JSeparator();
 	
 	/**
 	 * Create the application.
@@ -85,7 +88,7 @@ private void init() {
 			do_btnAnwenden_actionPerformed(arg0);
 		}
 	});
-	btnAnwenden.setBounds(294, 334, 97, 23);
+	btnAnwenden.setBounds(247, 334, 97, 23);
 	
 	bGui.getContentPane().add(btnAnwenden);
 	btnNewButton.addActionListener(new ActionListener() {
@@ -93,7 +96,7 @@ private void init() {
 			do_btnNewButton_actionPerformed(e);
 		}
 	});
-	btnNewButton.setBounds(401, 334, 97, 23);
+	btnNewButton.setBounds(570, 376, 97, 23);
 	
 	bGui.getContentPane().add(btnNewButton);
 	
@@ -136,15 +139,15 @@ private void init() {
 	cStatus.addItem("Problembehandlung");
 	cStatus.addItem("Geloest");
 	cStatus.addItem("Geschlossen");
-	lblNeueTicketsEinpflegen.setBounds(474, 19, 124, 20);
+	lblNeueTicketsEinpflegen.setBounds(522, 16, 178, 20);
 	
 	bGui.getContentPane().add(lblNeueTicketsEinpflegen);
 	cNeueTicket.setBorder(new TitledBorder(null, "Neue Tickets", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-	cNeueTicket.setBounds(470, 58, 128, 48);
+	cNeueTicket.setBounds(518, 60, 128, 48);
 	
 	bGui.getContentPane().add(cNeueTicket);
 	BearbeiterBox.setBorder(new TitledBorder(null, "Bearbeiter ausw\u00E4hlen", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-	BearbeiterBox.setBounds(474, 134, 124, 60);
+	BearbeiterBox.setBounds(522, 134, 124, 60);
 	
 	bGui.getContentPane().add(BearbeiterBox);
 	btnEin.addActionListener(new ActionListener() {
@@ -157,9 +160,11 @@ private void init() {
 			}
 		}
 	});
-	btnEin.setBounds(473, 211, 125, 28);
+	btnEin.setBounds(521, 246, 125, 28);
 	
 	bGui.getContentPane().add(btnEin);
+	separator.setOrientation(SwingConstants.VERTICAL);
+	separator.setVisible(true);
 	
 	String tableEin="`db136045x2588076`.`Bearbeiter`";
 	String columnEin="`Nachname`";
@@ -172,6 +177,10 @@ private void init() {
 		BearbeiterBox.setModel(new javax.swing.DefaultComboBoxModel(neuTicketsB));
 		String[] neuTicket=Connection.conHP.getDataSetsSingleCol("SELECT idTicket FROM db136045x2588076.Ticket WHERE Status='1';");
 		cNeueTicket.setModel(new javax.swing.DefaultComboBoxModel(neuTicket));
+		separator.setForeground(Color.BLACK);
+		separator.setBounds(443, 11, 2, 358);
+		
+		bGui.getContentPane().add(separator);
 	} catch (Exception e1) {
 		// TODO Auto-generated catch block
 		e1.printStackTrace();

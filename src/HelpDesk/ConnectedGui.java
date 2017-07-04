@@ -44,7 +44,7 @@ public class ConnectedGui {
 	 */
 	private void init() {
 		conGui=new JFrame();
-		conGui.setBounds(100, 100, 458, 351);
+		conGui.setBounds(100, 100, 458, 294);
 		conGui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		conGui.getContentPane().setLayout(null);
 		bNeu.addActionListener(new ActionListener() {
@@ -53,13 +53,13 @@ public class ConnectedGui {
 			}
 		});
 		
-		bNeu.setBounds(188, 29, 101, 29);
+		bNeu.setBounds(188, 29, 169, 29);
 		
 		conGui.getContentPane().add(bNeu);
-		lblNeuesTicketAnlegen.setBounds(51, 29, 111, 29);
+		lblNeuesTicketAnlegen.setBounds(51, 29, 127, 29);
 		
 		conGui.getContentPane().add(lblNeuesTicketAnlegen);
-		lblTicketBearbeiten.setBounds(51, 87, 113, 29);
+		lblTicketBearbeiten.setBounds(51, 87, 127, 29);
 		
 		conGui.getContentPane().add(lblTicketBearbeiten);
 		bBearbeiten.addActionListener(new ActionListener() {
@@ -67,10 +67,10 @@ public class ConnectedGui {
 				do_bBearbeiten_actionPerformed(arg0);
 			}
 		});
-		bBearbeiten.setBounds(188, 87, 101, 29);
+		bBearbeiten.setBounds(188, 87, 169, 29);
 		
 		conGui.getContentPane().add(bBearbeiten);
-		lblTicketstatus.setBounds(51, 147, 119, 29);
+		lblTicketstatus.setBounds(51, 147, 127, 29);
 		
 		conGui.getContentPane().add(lblTicketstatus);
 		bStatus.addActionListener(new ActionListener() {
@@ -78,10 +78,10 @@ public class ConnectedGui {
 				do_bStatus_actionPerformed(e);
 			}
 		});
-		bStatus.setBounds(188, 147, 101, 29);
+		bStatus.setBounds(188, 147, 169, 29);
 		
 		conGui.getContentPane().add(bStatus);
-		lblLsungsvorschlge.setBounds(51, 203, 111, 35);
+		lblLsungsvorschlge.setBounds(51, 203, 127, 35);
 		
 		conGui.getContentPane().add(lblLsungsvorschlge);
 		bLoesung.addActionListener(new ActionListener() {
@@ -89,7 +89,7 @@ public class ConnectedGui {
 				do_bLoesung_actionPerformed(arg0);
 			}
 		});
-		bLoesung.setBounds(188, 206, 101, 29);
+		bLoesung.setBounds(188, 206, 169, 29);
 		
 		conGui.getContentPane().add(bLoesung);
 		menuBar.setBounds(0, 0, 442, 19);
