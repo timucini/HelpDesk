@@ -29,12 +29,16 @@ import java.util.ArrayList;
 
 import dbHelper.*;
 
-
+/**
+ * @author Timur Burkholz (562205)
+ * @version 2017-06-16
+ * Anlehnung an Core.java
+ */
 
 public class Connection {
-
-	static dbHelper.ConfigLoader dbConfHp, dbConfKE;
-	static dbHelper.DBCon conHP, conKE;
+	//Erstellt 3 Configloader für die 3 DBs und 3DBConnections für die jeweiligen DBS
+	static dbHelper.ConfigLoader dbConfHp, dbConfKE,dbConfTs;
+	static dbHelper.DBCon conHP, conKE, conTs;
 	static ArrayList<String> AL = new ArrayList<String>();
 
 	/**
@@ -51,13 +55,17 @@ public class Connection {
 		// TODO Auto-generated method stub
 		dbConfHp=loadDBsConf("admin");
 		conHP=dbConSetup(dbConfHp);
-		System.out.println("Verbunden mit Status: "+dbConnect(true, conHP));
+		System.out.println("Verbunden mit Helpdesk: "+dbConnect(true, conHP));
 
 		dbConfKE=loadDBsConf("KEDB");
 		conKE=dbConSetup(dbConfHp);
-		System.out.println("Verbunden mit Status: "+dbConnect(true, conKE));
+		System.out.println("Verbunden mit KEDB: "+dbConnect(true, conKE));
 		
-	
+		
+		dbConfTs=loadDBsConf("user");
+		conTs=dbConSetup(dbConfTs);
+		System.out.println("Verbunden mit Status: "+dbConnect(true, conTs));
+		
 	}
 
 	public static ConfigLoader loadDBsConf(String DBConfFile) {
