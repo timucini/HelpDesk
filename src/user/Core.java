@@ -105,19 +105,8 @@ public class Core {
 	 */
 	public static DBCon dbConSetup(ConfigLoader dbConf) {
 		DBCon dbCon = new DBCon();
-		AL = null;
 		try {
-			AL = dbConf.getsArrLConfigItems();
-			switch (AL.size()) {
-			case 3:
-				dbCon.setConnection(AL.get(0), AL.get(1), AL.get(2));
-				break;
-			case 4:
-				dbCon.setConnection(AL.get(0), AL.get(1), AL.get(2), AL.get(3));
-				break;
-			default:
-				throw new Exception("Datenbankkonfiguration unvollständig.");
-			}
+			dbCon.setConnection(dbConf);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Konfiguration der Datenbankverbindung nicht möglich");

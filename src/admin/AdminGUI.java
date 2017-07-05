@@ -27,11 +27,14 @@ import javax.swing.JTextPane;
 /**
  * @author Matthias Cohn (565998)
  * @version 1.2 (2017-06-26)
+ * 
+ * Grafische Oberfläche zur Anwendung
  */
 public class AdminGUI extends JFrame {
 
 	/**
-	 * 
+	 * Alles autom. generierter Code - i.d.R. nur Designvorschriften
+	 * Es werden keine weiteren Kommentare dazu verfasst
 	 */
 	private static final long serialVersionUID = 1L;
 	private static JPanel contentPane;
@@ -143,10 +146,19 @@ public class AdminGUI extends JFrame {
 
 		contentPane.add(cmd_send);
 
+		
+		/**
+		 * Ab hier eigenständiger Code - es wird Dokumentiert
+		 */
 		showSysInf();
 		updatelbl(ACore.isDbConnected());
 	}
 
+	/**
+	 * Startmethode
+	 * Fragt alle wichtigen Systeminnformationen bei der ACore-Klasse an und
+	 * leitet diese an entsprechende "Befüll"-Methoden weiter
+	 */
 	private static void showSysInf() {
 		ACore.getSysInf();
 
@@ -156,10 +168,21 @@ public class AdminGUI extends JFrame {
 		fillSW(ACore.getInstalledWinSW());
 	}
 
+
+	
+	/**
+	 * Das Software-Informations Pane wird befüllt,
+	 * 
+	 * @param sSW
+	 */
 	private static void fillSW(String sSW) {
 		txtP_SW.setText(sSW);
 	}
 
+	/**
+	 * Die HW-Tabelle wird befüllt
+	 * @param sArr
+	 */
 	public static void modTable(String[][] sArr) {
 		for (int x = 0; x <= sArr.length - 1; x++) {
 			for (int y = 0; y <= sArr[x].length - 1; y++) {
@@ -168,8 +191,13 @@ public class AdminGUI extends JFrame {
 		}
 	}
 
+	
 	@SuppressWarnings("unused")
-
+	/**
+	 * Erstellt ArrayList mit allen angezeigten Elementen 
+	 * und wandelt diese ggf. in String um (Prevention)
+	 * @return ArrayList (String) Aktuelle Systemkonfiguration
+	 */
 	public static ArrayList<String> getTable() {
 		String sValue = "";
 		tm_SysInf.selectAll();
@@ -231,10 +259,10 @@ public class AdminGUI extends JFrame {
 		}
 	}
 
-	// ================================================================
+	
 	/**
-	 * 
-	 * @param con
+	 * Fragt den Status der Datenbankverbindung ab und aktualisiert die Statusanzeige auf der GUI
+	 * @param con - Datenbankverbindungsobjekt vom Typ DBCon
 	 */
 	private static void updatelbl(boolean con) {
 		if (con == true) {
@@ -247,7 +275,10 @@ public class AdminGUI extends JFrame {
 	}
 
 	/**
-	 * 
+	 * Befehl für das Verbinden mit der aktuellen DB-Configuration
+	 * der Befehl this.repaint(); holt die aktuelle DB-Verbindung
+	 * für den Fall, dass sich die Verbindung seit der Initialisierung des Fensters
+	 * geändert hat (zB durch ungültige DB-Struktur)
 	 * @param arg0
 	 */
 	protected void do_mntmDBVerbinden_actionPerformed(ActionEvent arg0) {
@@ -260,26 +291,45 @@ public class AdminGUI extends JFrame {
 	}
 
 	// ====================================================================
+	/**
+	 * Befehl zum trennen der Datenbankverbindung
+	 * @param e
+	 */
 	protected void do_mntmDBTrennen_actionPerformed(ActionEvent e) {
-		this.repaint();
 		if (ACore.dbConnect(false, ACore.dbStatus)) {
 			updatelbl(ACore.dbConnect(false, ACore.dbStatus));
 			cmd_send.setEnabled(ACore.isDbConnected());
 		}
 	}
 
+	/**
+	 * Aufräumen, wenn Fenster geschlossen wird
+	 * @param arg0
+	 */
 	protected void do_this_windowClosing(WindowEvent arg0) {
 		System.exit(0);
 	}
 
+	/**
+	 * Anwendung beenden
+	 * @param arg0
+	 */
 	protected void do_mntmBeenden_actionPerformed(ActionEvent arg0) {
 		System.exit(0);
 	}
 
+	/**
+	 * Anzeigen der Hilfe \ About - Informationen
+	 * @param arg0
+	 */
 	protected void do_mntmber_actionPerformed(ActionEvent arg0) {
 		JOptionPane.showMessageDialog(this, new About(), "About", JOptionPane.PLAIN_MESSAGE);
 	}
 
+	/**
+	 * Schickt das 'Ticket' zum Erstellen / Updaten via Core an die DB
+	 * @param arg0
+	 */
 	protected void do_cmd_send_actionPerformed(ActionEvent arg0) {
 		if (getTable() != null) {
 			int i = 0;

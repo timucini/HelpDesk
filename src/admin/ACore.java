@@ -24,9 +24,7 @@ public class ACore {
 	static SysInf actSysInf = new SysInf();
 	static dbHelper.ConfigLoader dbConfStatus, dbConfHD;
 	static dbHelper.DBCon dbStatus, dbHD;
-	static ArrayList<String> AL = new ArrayList<String>();
-	static String[] Arr1 = null;
-	static String[][] Arr2 = null;
+
 
 	/**
 	 * 
@@ -99,19 +97,8 @@ public class ACore {
 	 */
 	public static DBCon dbConSetup(ConfigLoader dbConf) {
 		DBCon dbCon = new DBCon();
-		AL = null;
 		try {
-			AL = dbConf.getsArrLConfigItems();
-			switch (AL.size()) {
-			case 3:
-				dbCon.setConnection(AL.get(0), AL.get(1), AL.get(2));
-				break;
-			case 4:
-				dbCon.setConnection(AL.get(0), AL.get(1), AL.get(2), AL.get(3));
-				break;
-			default:
-				throw new Exception("Datenbankkonfiguration unvollständig.");
-			}
+			dbCon.setConnection(dbConf);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Konfiguration der Datenbankverbindung nicht möglich");
@@ -259,13 +246,10 @@ public class ACore {
 		ArrayList<String> arrLCols = new ArrayList<String>();
 		String sTable = "CIs";
 		int iDone = 0;
-		AL = null;
-
 		if (bDoesExsist(arrLValues.get(0)) == false) {
 			try {
 				arrLCols = dbStatus.getColumnsList(sTable);
 				arrLCols.remove(0); // id - Autoincrement
-
 				/*
 				 * arrLCols.remove(arrLCols.size() - 3); // Solution
 				 * arrLCols.remove(arrLCols.size() - 2); // Timestamp update
@@ -296,7 +280,6 @@ public class ACore {
 				return 0;
 			}
 		}
-
 		return iDone;
 	}
 
@@ -354,18 +337,19 @@ public class ACore {
 	 */
 	@SuppressWarnings("unused")
 	private static String sForeignKey(DBCon db, String Crit, String CritCol, String PrimKey, String ForeignTable) {
-		AL = null;
+		ArrayList<String> arrlAL = new ArrayList<String>();
+		
 		try {
-			AL = db.getSingleDataSetList(
+			arrlAL = db.getSingleDataSetList(
 					"SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE " + CritCol + "='" + Crit + "'");
 		} catch (Exception e) {
 			System.out.println("Fehler bei SQL: \n" + "SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE "
 					+ CritCol + "='" + Crit + "'");
-			AL = null;
+			arrlAL = null;
 			e.printStackTrace();
 		}
-		if (AL != null) {
-			return (AL.get(0));
+		if (arrlAL != null) {
+			return (arrlAL.get(0));
 		} else {
 			return "1";
 		}
