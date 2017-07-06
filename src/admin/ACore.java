@@ -1,6 +1,3 @@
-/**
- * 
- */
 package admin;
 
 import java.awt.EventQueue;
@@ -35,7 +32,7 @@ public class ACore {
 	}
 
 	/**
-	 * @param args
+	 * @param args Programm startet
 	 */
 	public static void main(String[] args) {
 		doDBAutoConnect(sDBConfFile);
@@ -283,7 +280,7 @@ public class ACore {
 	 * Erstellen / Updaten einen CI Eintrags in der DB
 	 * 
 	 * @param arrLValues:
-	 *            ArrayList<String> - Liste mit neuen Werten
+	 *            ArrayList(String) - Liste mit neuen Werten
 	 * @return int: Anzahl der veränderten Datensätze; Negativ: Update von
 	 *         Datensäten
 	 */

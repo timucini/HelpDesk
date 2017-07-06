@@ -14,7 +14,7 @@ import javax.swing.border.BevelBorder;
 
 /**
  * @author Wolfgang Lang
- * @version ==> lblVersion
+ * @version == lblVersion
  * @see "Foliensatz zur Vorlesung"
  */
 @SuppressWarnings( "serial" )

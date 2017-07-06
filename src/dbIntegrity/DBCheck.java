@@ -1,6 +1,3 @@
-/**
- * 
- */
 package dbIntegrity;
 
 import java.sql.SQLException;
@@ -33,10 +30,6 @@ public class DBCheck {
 	}
 
 	/**
-	 * 
-	 * @param dbConf
-	 * @param con
-	 * @param sDBName
 	 * @return int: -1 (Datenbankauswahl fehlgeschlagen),
 	 */
 	public int iDBIsInteger(){

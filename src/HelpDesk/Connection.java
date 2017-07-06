@@ -1,32 +1,8 @@
 package HelpDesk;
 
 import java.io.File;
-/*import java.sql.DriverManager;
-import java.sql.SQLException;
-
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
-
-public class Connection {
-	Connection conHP=new Connection();
-	
-	public void connect() {
-	
-	String usernameHP= "s136045_2588076";
-	String passwordHP= "HelpDesk1!=0";
-	String urlHP="mysql.webhosting47.1blu.de:3306";
-	
-	
-	conHP.connect() ;	
-
-	
-	
-	
-	
-	}
-}*/
 import java.sql.SQLException;
 import java.util.ArrayList;
-
 import dbHelper.*;
 
 /**

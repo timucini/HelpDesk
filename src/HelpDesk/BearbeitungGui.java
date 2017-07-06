@@ -1,16 +1,12 @@
 package HelpDesk;
 import java.awt.Color;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-
 import dbHelper.*;
-
 import java.awt.Font;
 import java.awt.TextArea;
-
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -19,23 +15,19 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.awt.event.ActionEvent;
-
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.border.TitledBorder;
-
 import com.mysql.jdbc.Statement;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
-
 /**
  * @author Timur Burkholz (562205)
  * @version 2017-06-28
  */
-
 public class BearbeitungGui {
 	static JFrame bGui=new JFrame();
 	private final JLabel lblNewLabel = new JLabel("Tickets bearbeiten");
@@ -50,13 +42,11 @@ public class BearbeitungGui {
 	private final JComboBox cNeueTicket = new JComboBox();
 	private final JComboBox BearbeiterBox = new JComboBox();
 	private final JButton btnEin = new JButton("Einpflegen");
-	private final JSeparator separator = new JSeparator();
-	
+	private final JSeparator separator = new JSeparator();	
 	/**
 	 * Create the application.
 	 */
-	
-public BearbeitungGui() {
+	public BearbeitungGui() {
 	init();
 }
 	/**
@@ -67,8 +57,7 @@ private void init() {
 	bGui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	bGui.getContentPane().setLayout(null);
 	lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 14));
-	lblNewLabel.setBounds(47, 11, 124, 28);
-	
+	lblNewLabel.setBounds(47, 11, 124, 28);	
 	bGui.getContentPane().add(lblNewLabel);
 	cTicket.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
@@ -76,33 +65,27 @@ private void init() {
 		}
 	});
 	cTicket.setBorder(new TitledBorder(null, "Tickets ausw\u00E4hlen", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-	cTicket.setBounds(47, 62, 124, 44);
-	
+	cTicket.setBounds(47, 62, 124, 44);	
 	bGui.getContentPane().add(cTicket);
 	cStatus.setBorder(new TitledBorder(null, "Status setzen", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-	cStatus.setBounds(220, 62, 124, 44);
-	
+	cStatus.setBounds(220, 62, 124, 44);	
 	bGui.getContentPane().add(cStatus);
 	btnAnwenden.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
 			do_btnAnwenden_actionPerformed(arg0);
 		}
 	});
-	btnAnwenden.setBounds(247, 334, 97, 23);
-	
+	btnAnwenden.setBounds(247, 334, 97, 23);	
 	bGui.getContentPane().add(btnAnwenden);
 	btnNewButton.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			do_btnNewButton_actionPerformed(e);
 		}
 	});
-	btnNewButton.setBounds(570, 376, 97, 23);
-	
-	bGui.getContentPane().add(btnNewButton);
-	
+	btnNewButton.setBounds(570, 376, 97, 23);	
+	bGui.getContentPane().add(btnNewButton);	
 	String table="`db136045x2588076`.`Ticket`";
 	String column="`idTicket`";
-
 	try {
 		String[] tickets = Connection.conHP.getContentOfColumn(table, column);
 	
@@ -112,9 +95,7 @@ private void init() {
 		Alternative mit Stream (ab java 8)
 		String[] both=Stream.of(neuTicket,tickets).flatMap(Stream::of).toArray(String[]::new);
 	
-	*/	cTicket.setModel(new javax.swing.DefaultComboBoxModel(tickets));
-		
-		
+	*/	cTicket.setModel(new javax.swing.DefaultComboBoxModel(tickets));	
 	} catch (Exception e1) {
 		// TODO Auto-generated catch block
 		e1.printStackTrace();
@@ -125,11 +106,9 @@ private void init() {
 	
 	bGui.getContentPane().add(tBeschreibung);
 	label.setBounds(220, 30, 199, 23);
-	
 	bGui.getContentPane().add(label);
 	LoesungE.setBorder(new TitledBorder(null, "L\u00F6sungsweg protokollieren", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-	LoesungE.setBounds(47, 211, 298, 112);
-	
+	LoesungE.setBounds(47, 211, 298, 112);	
 	bGui.getContentPane().add(LoesungE);
 	/*
 	 * ComboBox cStatus mit Stats aus HD-DB
@@ -139,16 +118,13 @@ private void init() {
 	cStatus.addItem("Problembehandlung");
 	cStatus.addItem("Geloest");
 	cStatus.addItem("Geschlossen");
-	lblNeueTicketsEinpflegen.setBounds(522, 16, 178, 20);
-	
+	lblNeueTicketsEinpflegen.setBounds(522, 16, 178, 20);	
 	bGui.getContentPane().add(lblNeueTicketsEinpflegen);
 	cNeueTicket.setBorder(new TitledBorder(null, "Neue Tickets", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-	cNeueTicket.setBounds(518, 60, 128, 48);
-	
+	cNeueTicket.setBounds(518, 60, 128, 48);	
 	bGui.getContentPane().add(cNeueTicket);
 	BearbeiterBox.setBorder(new TitledBorder(null, "Bearbeiter ausw\u00E4hlen", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-	BearbeiterBox.setBounds(522, 134, 124, 60);
-	
+	BearbeiterBox.setBounds(522, 134, 124, 60);	
 	bGui.getContentPane().add(BearbeiterBox);
 	btnEin.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
@@ -160,12 +136,10 @@ private void init() {
 			}
 		}
 	});
-	btnEin.setBounds(521, 246, 125, 28);
-	
+	btnEin.setBounds(521, 246, 125, 28);	
 	bGui.getContentPane().add(btnEin);
 	separator.setOrientation(SwingConstants.VERTICAL);
-	separator.setVisible(true);
-	
+	separator.setVisible(true);	
 	String tableEin="`db136045x2588076`.`Bearbeiter`";
 	String columnEin="`Nachname`";
 	/*
@@ -178,16 +152,13 @@ private void init() {
 		String[] neuTicket=Connection.conHP.getDataSetsSingleCol("SELECT idTicket FROM db136045x2588076.Ticket WHERE Status='1';");
 		cNeueTicket.setModel(new javax.swing.DefaultComboBoxModel(neuTicket));
 		separator.setForeground(Color.BLACK);
-		separator.setBounds(443, 11, 2, 358);
-		
+		separator.setBounds(443, 11, 2, 358);		
 		bGui.getContentPane().add(separator);
 	} catch (Exception e1) {
 		// TODO Auto-generated catch block
 		e1.printStackTrace();
 	}
-	
-		
-}
+	}
 	/*
 	 * Zurück zur ConGui
 	 */
@@ -207,7 +178,6 @@ private void init() {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
 		if(cStatus.getSelectedItem()=="Angenommen")
 			try {
 				Connection.conHP.updateDataSet("UPDATE `db136045x2588076`.`Ticket` SET `Status`='2' WHERE `idTicket`='"+id+"'");
@@ -319,7 +289,6 @@ private void init() {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 		}
-	 
 	}
 	/*
 	 * Neuen Tickets wird ein Bearbeiter zugeweist

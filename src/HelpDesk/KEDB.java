@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -22,7 +21,6 @@ import java.awt.Color;
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
-
 /**
  * @author Timur Burkholz (562205)
  * @version 2017-06-16
@@ -45,7 +43,6 @@ public class KEDB {
 	private final JTextArea textNeuLoesung = new JTextArea();
 	private final JLabel lLV = new JLabel("L\u00F6sungsvorschlag");
 	private final JButton btnAnlegen = new JButton("anlegen");
-	
 	/**
 	 * Create the application.
 	 */
@@ -54,8 +51,7 @@ public KEDB() {
 	}
 	/**
 	 * Initialize the contents of the frame.
-	 */
-		
+	 */		
 	private void init() {
 		kGui.setBounds(100, 100, 883, 515);
 		kGui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -97,18 +93,14 @@ public KEDB() {
 						e.printStackTrace();
 					}
 				}
-			});
-			
-			
+			});			
 		cCis.setBorder(new TitledBorder(null, "CI-ID", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		cCis.setBounds(47, 285, 85, 44);	
-			
+		cCis.setBounds(47, 285, 85, 44);				
 		kGui.getContentPane().add(cCis);
 		tableLoesung.setBorder(null);
 		tableLoesung.setBounds(47, 105, 463, 139);
 		kGui.getContentPane().add(tableLoesung);
-		tableCis.setBounds(142, 285, 368, 147);
-			
+		tableCis.setBounds(142, 285, 368, 147);			
 		kGui.getContentPane().add(tableCis);
 		String table="`db136045x2588076`.`CIs`";
 		String columnID="`id`";
@@ -128,13 +120,11 @@ public KEDB() {
 					do_btnZurck_actionPerformed(arg0);
 					}
 				});
-		btnZurck.setBounds(702, 442, 89, 23);
-				
+		btnZurck.setBounds(702, 442, 89, 23);				
 		kGui.getContentPane().add(btnZurck);
 		separator.setOrientation(SwingConstants.VERTICAL);
 		separator.setForeground(Color.BLACK);
-		separator.setBounds(558, 11, 1, 454);
-				
+		separator.setBounds(558, 11, 1, 454);				
 		kGui.getContentPane().add(separator);
 		textBetrof.setBorder(new TitledBorder(null, "Betroffen", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		textBetrof.setBounds(713, 120, 117, 36);
@@ -142,38 +132,27 @@ public KEDB() {
 		textFehler.setBorder(new TitledBorder(null, "Fehlername", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		textFehler.setBounds(586, 120, 117, 36);
 		textFehler.setColumns(10);
-				
-				
-			
 		separator.setVisible(true);
 		kGui.getContentPane().add(separator);
-		lblNeuenLsungsvorschlagAnlegen.setBounds(595, 50, 218, 28);
-			
-		kGui.getContentPane().add(lblNeuenLsungsvorschlagAnlegen);
-			
+		lblNeuenLsungsvorschlagAnlegen.setBounds(595, 50, 218, 28);			
+		kGui.getContentPane().add(lblNeuenLsungsvorschlagAnlegen);			
 		kGui.getContentPane().add(textFehler);
-		cNeuTyp.setBounds(586, 168, 101, 36);
-			
-		kGui.getContentPane().add(cNeuTyp);
-			
+		cNeuTyp.setBounds(586, 168, 101, 36);			
+		kGui.getContentPane().add(cNeuTyp);			
 		kGui.getContentPane().add(textBetrof);
-		textNeuLoesung.setBounds(595, 257, 205, 91);
-			
+		textNeuLoesung.setBounds(595, 257, 205, 91);			
 		kGui.getContentPane().add(textNeuLoesung);
-		lLV.setBounds(595, 230, 101, 28);
-			
+		lLV.setBounds(595, 230, 101, 28);			
 		kGui.getContentPane().add(lLV);
 		btnAnlegen.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					do_btnAnlegen_actionPerformed(e);
 				}
 				});
-		btnAnlegen.setBounds(756, 365, 89, 23);
-			
+		btnAnlegen.setBounds(756, 365, 89, 23);			
 		kGui.getContentPane().add(btnAnlegen);
 		cNeuTyp.addItem("Hardware");
-		cNeuTyp.addItem("Software");
-			
+		cNeuTyp.addItem("Software");			
 	}
 	/*
 	 * Wenn gesuchtes Hardware/Software-Teil ausgewählt ist in ComboBox, wird in einer Table Fehlername und Loesung in Table dargestellt
@@ -192,11 +171,9 @@ public KEDB() {
 		fehler=fehl.toArray(fehler);
 		String[] loesung=new String[loes.size()];
 		loesung=loes.toArray(loesung);
-		for (int i = 0; i < fehler.length; i++) {
-			
+		for (int i = 0; i < fehler.length; i++) {			
 	        tb1.addRow(new Object[] {fehler[i], loesung[i]}
-	        );}
-	
+	        );}	
 		}	
 	/*
 	 * Wenn Hardware oder Software ausgewählt werden jeweiligen Typen in ComboBox gefüllt
@@ -208,10 +185,7 @@ public KEDB() {
 		}
 		if(cType.getSelectedItem()=="Software") {
 					String[] soft = Connection.conKE.getDataSetsSingleCol("SELECT `Betroffen` FROM `db136045x2588052`.`KEDB` WHERE `Software`='1'");
-					cHsType.setModel(new javax.swing.DefaultComboBoxModel(soft));
-
-			
-				
+					cHsType.setModel(new javax.swing.DefaultComboBoxModel(soft));				
 			}
 		}
 		
@@ -239,11 +213,9 @@ public KEDB() {
 	        );}
 		if (tickets.length==0 && beschr.length==0) {
 				dtm.addRow(new Object[] {"Kein Ticket vorhanden","Leer"});
-			}
-	
+			}	
 		}
 		catch(SQLException e){
-		
 			} 
 	}
 	/*
@@ -272,8 +244,6 @@ public KEDB() {
 		String eingabe5=textNeuLoesung.getText();
 		
 		String val="'"+eingabe1+"',"+"'"+eingabe2+"',"+"'"+eingabe3+"',"+"'"+eingabe4+"',"+"'"+eingabe5+"'";
-        
-			
 			try {
 				Connection.conKE.insertDataSet("INSERT INTO `db136045x2588052`.`KEDB` ( `Fehler`, `Hardware`, `Software`, `Betroffen`, `Loesungsvorschlag`)"+" VALUES ("+val+")");
 			} catch (Exception e1) {

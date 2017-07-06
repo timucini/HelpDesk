@@ -1,12 +1,9 @@
 package HelpDesk;
 
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-
 import dbHelper.*;
-
 import java.awt.Font;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -23,23 +20,18 @@ import javax.swing.JOptionPane;
  */
 
 public class Gui {
-
-	
 	static JFrame frame=new JFrame();
 	private final JLabel lblWillkommenImHelpdesk = new JLabel("Willkommen im HelpDesk");
 	private final JButton btnConnect = new JButton("Connect");
 	private final JMenuBar menuBar = new JMenuBar();
 	private final JMenu mHilfe = new JMenu("Hilfe");
 	private final JMenuItem mAbout = new JMenuItem("About");
-	
-	
 	/**
 	 * Create the application.
 	 */
 	public Gui() {
 		initialize();
 	}
-
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -59,12 +51,9 @@ public class Gui {
 			}
 		});
 		btnConnect.setBounds(122, 118, 137, 42);
-		
 		frame.getContentPane().add(btnConnect);
 		menuBar.setBounds(0, 0, 419, 21);
-		
 		frame.getContentPane().add(menuBar);
-		
 		menuBar.add(mHilfe);
 		mAbout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -80,14 +69,10 @@ public class Gui {
 		 * die ConnectedGui wird aufgerufen und conGui visible, während die GUI geschlossen wird
 		 */
 	public void do_btnNewButton_actionPerformed(ActionEvent arg0) {		
-			
 		Connection.main(null);
 		frame.setVisible(false); 
 		ConnectedGui conGui=new ConnectedGui();
 		ConnectedGui.conGui.setVisible(true);
-			
-	
-	
 	}
 	protected void do_mAbout_actionPerformed(ActionEvent arg0) {
 		JOptionPane.showMessageDialog(frame, "Author: Timur Burkholz (562205)\n @version 2017-06-16","About", 1);

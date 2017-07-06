@@ -1,16 +1,11 @@
 package HelpDesk;
-
 import java.awt.EventQueue;
-
 /**
  * @author Timur Burkholz (562205)
  * @version 2017-06-16
  */
-
-
-
 public class Main {
-	
+
 /* 
  * Die Mainklasse ruft die Gui auf
  */

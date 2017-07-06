@@ -1,11 +1,8 @@
 package HelpDesk;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-
 import dbHelper.*;
-
 import java.awt.Font;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -13,12 +10,10 @@ import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import javax.swing.JMenuBar;
-
 /**
  * @author Timur Burkholz (562205)
  * @version 2017-06-28
  */
-
 public class ConnectedGui {
 	
 	static JFrame conGui=new JFrame();
@@ -53,25 +48,20 @@ public class ConnectedGui {
 			}
 		});
 		
-		bNeu.setBounds(188, 29, 169, 29);
-		
+		bNeu.setBounds(188, 29, 169, 29);		
 		conGui.getContentPane().add(bNeu);
-		lblNeuesTicketAnlegen.setBounds(51, 29, 127, 29);
-		
+		lblNeuesTicketAnlegen.setBounds(51, 29, 127, 29);		
 		conGui.getContentPane().add(lblNeuesTicketAnlegen);
-		lblTicketBearbeiten.setBounds(51, 87, 127, 29);
-		
+		lblTicketBearbeiten.setBounds(51, 87, 127, 29);		
 		conGui.getContentPane().add(lblTicketBearbeiten);
 		bBearbeiten.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				do_bBearbeiten_actionPerformed(arg0);
 			}
 		});
-		bBearbeiten.setBounds(188, 87, 169, 29);
-		
+		bBearbeiten.setBounds(188, 87, 169, 29);		
 		conGui.getContentPane().add(bBearbeiten);
-		lblTicketstatus.setBounds(51, 147, 127, 29);
-		
+		lblTicketstatus.setBounds(51, 147, 127, 29);		
 		conGui.getContentPane().add(lblTicketstatus);
 		bStatus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -79,10 +69,8 @@ public class ConnectedGui {
 			}
 		});
 		bStatus.setBounds(188, 147, 169, 29);
-		
 		conGui.getContentPane().add(bStatus);
-		lblLsungsvorschlge.setBounds(51, 203, 127, 35);
-		
+		lblLsungsvorschlge.setBounds(51, 203, 127, 35);		
 		conGui.getContentPane().add(lblLsungsvorschlge);
 		bLoesung.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -90,10 +78,8 @@ public class ConnectedGui {
 			}
 		});
 		bLoesung.setBounds(188, 206, 169, 29);
-		
 		conGui.getContentPane().add(bLoesung);
-		menuBar.setBounds(0, 0, 442, 19);
-		
+		menuBar.setBounds(0, 0, 442, 19);		
 		conGui.getContentPane().add(menuBar);
 		menuBar.add(lblDbVerbunden);
 		lblDbVerbunden.setForeground(Color.RED);
@@ -105,13 +91,11 @@ public class ConnectedGui {
 		lblDbVerbunden.setForeground(Color.GREEN);
 		lblDbVerbunden.setText("DB verbunden");
 		}
-	
 	}
 		
 	/* 
 	 * Actionlistener auf den Buttons -> Weiterleitung an die anderen Gui-Klassen
-	 */
-	
+	 */	
 	protected void do_bNeu_actionPerformed(ActionEvent arg0) {
 		conGui.setVisible(false);
 		EingabeGui eGui=new EingabeGui();
@@ -132,6 +116,5 @@ public class ConnectedGui {
 		conGui.setVisible(false);
 		KEDB kGui=new KEDB();
 		KEDB.kGui.setVisible(true);
-		
 	}
 }
