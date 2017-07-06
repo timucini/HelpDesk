@@ -32,11 +32,16 @@ import javax.swing.JTextPane;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
-
+/**
+ * @author Matthias Cohn (565998)
+ * @version 1.2 (2017-06-26)
+ * 
+ * Grafische Oberfläche zur Anwendung
+ */
 public class UserGUI extends JFrame {
-
 	/**
-	 * 
+	 * Alles autom. generierter Code - i.d.R. nur Designvorschriften
+	 * Es werden keine weiteren Kommentare dazu verfasst
 	 */
 	private static final long serialVersionUID = 1L;
 	private static JPanel contentPane;
@@ -289,47 +294,39 @@ public class UserGUI extends JFrame {
 		
 		scrollP_SW.setViewportView(txtP_SW);
 
-		/*
-		 * modTable(); getTable();
+		/**
+		 * Ab hier eigenständiger Code - es wird Dokumentiert
 		 */
 		showSysInf();
 		updatelbl(Core.isDbConnected());
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/**
+	 * Startmethode
+	 * Fragt alle wichtigen Systeminnformationen bei der ACore-Klasse an und
+	 * leitet diese an entsprechende "Befüll"-Methoden weiter
+	 */	
 	private static void showSysInf() {
 		Core.getSysInf();
-
 		scrollP_SysInf.setBorder(new TitledBorder(null, "Aktuelle Systemkonfiguration", TitledBorder.LEADING,
 				TitledBorder.TOP, null, null));
 		modTable(Core.SysConf); // Tabelle füllen
 		fillSW(Core.getInstalledWinSW());
 	}
 	
-	
+	/**
+	 * Das Software-Informations Pane wird befüllt,
+	 * 
+	 * @param sSW
+	 */
 	private static void fillSW(String sSW){
 		txtP_SW.setText(sSW);
 	}
 
+	/**
+	 * Die HW-Tabelle wird befüllt
+	 * @param sArr
+	 */
 	public static void modTable(String[][] sArr) {
 		for (int x = 0; x <= sArr.length - 1; x++) {
 			for (int y = 0; y <= sArr[x].length - 1; y++) {
@@ -338,6 +335,11 @@ public class UserGUI extends JFrame {
 		}
 	}
 
+	/**
+	 * Erstellt ArrayList mit allen angezeigten Elementen 
+	 * und wandelt diese ggf. in String um (Prevention)
+	 * @return ArrayList (String) Aktuelle Systemkonfiguration
+	 */
 	public static void getTable() {
 		for (int x = 0; x <= tm_SysInf.getColumnCount() - 1; x++) {
 			for (int y = 0; y <= tm_SysInf.getRowCount() - 1; y++) {
@@ -347,6 +349,10 @@ public class UserGUI extends JFrame {
 		}
 	}
 
+	/**
+	 * Fragt den Status der Datenbankverbindung ab und aktualisiert die Statusanzeige auf der GUI
+	 * @param con - Datenbankverbindungsobjekt vom Typ DBCon
+	 */
 	private static void updatelbl(boolean con) {
 		if (con == true) {
 			lbl_isConnected.setForeground(Color.GREEN);
@@ -357,6 +363,13 @@ public class UserGUI extends JFrame {
 		}
 	}
 	
+	/**
+	 * Befehl für das Verbinden mit der aktuellen DB-Configuration
+	 * der Befehl this.repaint(); holt die aktuelle DB-Verbindung
+	 * für den Fall, dass sich die Verbindung seit der Initialisierung des Fensters
+	 * geändert hat (zB durch ungültige DB-Struktur)
+	 * @param arg0
+	 */
 	protected void do_mntmDBVerbinden_actionPerformed(ActionEvent arg0) {
 		// GUI muss neu gepaintet werden, damit aktuelle DBCon von der Core übernommen wird!!!!
 		this.repaint();
@@ -370,6 +383,10 @@ public class UserGUI extends JFrame {
 		}
 	}
 
+	/**
+	 * Befehl zum trennen der Datenbankverbindung
+	 * @param e
+	 */
 	protected void do_mntmDBTrennen_actionPerformed(ActionEvent e) {
 		// GUI muss neu gepaintet werden, damit aktuelle DBCon von der Core übernommen wird!!!!
 		this.repaint();
@@ -379,28 +396,45 @@ public class UserGUI extends JFrame {
 			cmd_send.setEnabled(Core.isDbConnected());
 		}
 	}
-
+	
+	/**
+	 * Aufräumen, wenn Fenster geschlossen wird
+	 * @param arg0
+	 */
 	protected void do_this_windowClosing(WindowEvent arg0) {
 		System.exit(0);
 	}
 
+	/**
+	 * Anwendung beenden
+	 * @param arg0
+	 */
 	protected void do_mntmBeenden_actionPerformed(ActionEvent arg0) {
 		System.exit(0);
 	}
 
+	/**
+	 * Schickt das 'Ticket' zum Erstellen via Core an die DB
+	 * @param arg0
+	 */
 	protected void do_cmd_send_actionPerformed(ActionEvent e) {
 		createNewTicket();
 	}
 	
+	/**
+	 * Je nach param load, werden die Drop-Down-Boxen HW und SW befüllt oder geleert
+	 * Gefüllt nur bei verbundener DB
+	 * @param load
+	 */
 	private void fillcbBoxes(boolean load){
 		if (load){
-			ArrayList<String> ArrLHW=Core.arrLDropDown("HW", "HWType");
-			ArrayList<String> ArrLSW=Core.arrLDropDown("SW", "SWType");	
-			if (ArrLHW!=null && ArrLSW!=null){
-				for (String s:ArrLHW){
+			ArrayList<String> arrLHW=Core.arrLDropDown("HW", "HWType");
+			ArrayList<String> arrLSW=Core.arrLDropDown("SW", "SWType");	
+			if (arrLHW!=null && arrLSW!=null){
+				for (String s:arrLHW){
 					cbB_HW.addItem(s);
 				}
-				for (String s:ArrLSW){
+				for (String s:arrLSW){
 					cbB_SW.addItem(s);
 				}
 			}else fillcbBoxes(false);
@@ -410,6 +444,12 @@ public class UserGUI extends JFrame {
 			cbB_SW.removeAllItems();
 		}
 	}	
+	/**
+	 * Fragt über die Core alle für den Client verfügbaren Tickets in der DB ab
+	 * und befüllt die Ticket-Tabelle
+	 * Zusätzlich wird noch ein Listener auf die Tabelle gelegt,
+	 * um den aktuell selektierten Eintrag (Zeile) zu ermitteln
+	 */
 	private static void fill_TicketTable(){
 		if(Core.getTicketsforClient()!=null){
 		table_Tickets = new JTable(Core.Tickets[0].length, Core.Tickets.length);
@@ -433,6 +473,10 @@ public class UserGUI extends JFrame {
 		}
 	}
 	
+	/**
+	 * Befüllen der TicketTabelle mit Informationen aus der DB
+	 * @param sArr Übergebene Werte aus Core
+	 */
 	public static void modTicketTable(String[][] sArr) {
 		for (int x = 0; x <= sArr.length - 1; x++) {
 			for (int y = 0; y <= sArr[x].length - 1; y++) {
@@ -440,6 +484,13 @@ public class UserGUI extends JFrame {
 			}
 		}
 	}
+	
+	/**
+	 * Listener welcher auf Veränderungen des Selektierten Eintrag horcht
+	 * bei Wechsel werden weitere Informationen (genaue Beschreibung und Lösung) 
+	 * geholt und ein den entsprechenden Panes angezeigt
+	 * @param arg0
+	 */
 	protected static void do_table_Tickets_mouseClicked(MouseEvent arg0) {
 		if(table_Tickets.getSelectedRow()!=-1){
 			try{
@@ -454,25 +505,35 @@ public class UserGUI extends JFrame {
 			txtP_Solution.setText("Kein Ticket ausgewählt");
 		}
 	}
+	
+	/**
+	 * refresh Button für die Ticket-Tabelle 
+	 * @param arg0
+	 */
 	protected void do_cmd_TicketRefresh_actionPerformed(ActionEvent arg0) {
 		fill_TicketTable();
 	}
 	
+	/**
+	 * Erzeugt ein neues Ticket und sendet es via Core an DB
+	 * Befüllt eine ArrayList mit Informationen aus allen Informationselementen
+	 * und übergibt diese der sendTicket()-Funktion aus Core
+	 */
 	private static void createNewTicket(){
-		ArrayList <String> ArrL = new ArrayList<String>();
-		ArrL.add(Core.SysConf[0][1]);  //Computername = SendingCI
-		ArrL.add(txt_Name.getText());
-		ArrL.add(txt_phone.getText());
-		ArrL.add(txt_Mail.getText());
-		ArrL.add(cbB_HW.getSelectedItem().toString());
-		ArrL.add(cbB_SW.getSelectedItem().toString());
-		ArrL.add(txtP_NewIssue.getText());
-		ArrL.add(txt_Geb.getText());
-		ArrL.add(txt_Raum.getText());
-		ArrL.add(txt_Anschluss.getText());
-		ArrL.add(sSysInf());
-		ArrL.add(txtP_SW.getText());
-		if (Core.sendTicket(ArrL)>=1){
+		ArrayList <String> arrL = new ArrayList<String>();
+		arrL.add(Core.SysConf[0][1]);  //Computername = SendingCI
+		arrL.add(txt_Name.getText());
+		arrL.add(txt_phone.getText());
+		arrL.add(txt_Mail.getText());
+		arrL.add(cbB_HW.getSelectedItem().toString());
+		arrL.add(cbB_SW.getSelectedItem().toString());
+		arrL.add(txtP_NewIssue.getText());
+		arrL.add(txt_Geb.getText());
+		arrL.add(txt_Raum.getText());
+		arrL.add(txt_Anschluss.getText());
+		arrL.add(sSysInf());
+		arrL.add(txtP_SW.getText());
+		if (Core.sendTicket(arrL)>=1){
 			JOptionPane.showMessageDialog(null, "Ihr Ticket wurde erfolgreich erstellt.");
 			cleanupAndRefresh();
 			panel_Status.grabFocus();
@@ -485,6 +546,9 @@ public class UserGUI extends JFrame {
 		
 	}
 	
+	/**
+	 * Wenn Ticket erfolgreich erstellt wurde, werden eingaben in den Eingabefeldern gellöscht
+	 */
 	private static void cleanupAndRefresh(){
 		txt_Name.setText("");
 		txt_phone.setText("");
@@ -498,7 +562,10 @@ public class UserGUI extends JFrame {
 		fill_TicketTable();
 	}
 	
-	
+	/**
+	 * Laden von Systeminformationen
+	 * @return String Systeminformationen
+	 */
 	private static String sSysInf(){
 		String s="";
 		for (int x=0; x<=Core.SysConf.length-1;x++){
@@ -508,6 +575,10 @@ public class UserGUI extends JFrame {
 		return s;
 	}
 	
+	/**
+	 * Anzeigen der Hilfe \ About - Informationen
+	 * @param arg0
+	 */
 	protected void do_mntmber_actionPerformed(ActionEvent arg0) {
 		JOptionPane.showMessageDialog( this, new About(), "About",
                 JOptionPane.PLAIN_MESSAGE );

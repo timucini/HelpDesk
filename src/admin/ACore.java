@@ -16,7 +16,7 @@ import dbIntegrity.DBCheck;
  * @version 1.2 (2017-06-26)
  */
 public class ACore {
-	static String sDBConfFile = "user";
+	static String sDBConfFile = "admin";
 	final static String sExpectedSchema="Helpdesk"; // Ticket / Helpdesk / KEDB
 	protected static String[][] SysConf = new String[18][2];
 	protected static String[][] Tickets = null;
