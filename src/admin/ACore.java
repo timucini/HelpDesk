@@ -4,6 +4,7 @@
 package admin;
 
 import java.awt.EventQueue;
+import java.io.File;
 import java.sql.SQLException;
 import sysInf.*;
 import java.util.ArrayList;
@@ -17,14 +18,14 @@ import dbIntegrity.DBCheck;
  */
 public class ACore {
 	static String sDBConfFile = "admin";
-	final static String sExpectedSchema="Helpdesk"; // Ticket / Helpdesk / KEDB
+	final static String sExpectedSchema = "Helpdesk"; // Ticket / Helpdesk /
+														// KEDB
 	protected static String[][] SysConf = new String[18][2];
 	protected static String[][] Tickets = null;
 
 	static SysInf actSysInf = new SysInf();
 	static dbHelper.ConfigLoader dbConfStatus, dbConfHD;
 	static dbHelper.DBCon dbStatus, dbHD;
-
 
 	/**
 	 * 
@@ -37,7 +38,6 @@ public class ACore {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
 		doDBAutoConnect(sDBConfFile);
 		loadSysInf();
 		EventQueue.invokeLater(new Runnable() {
@@ -51,20 +51,36 @@ public class ACore {
 			}
 		});
 	}
-	
+
 	/**
 	 * Autom. laden einer Configuration und erstellen der DB-Verbindung
-	 * @param DBConfFile: String - Name / Pfad zur Configurationsdatei
+	 * 
+	 * @param DBConfFile:
+	 *            String - Name / Pfad zur Configurationsdatei
 	 */
 	private static void doDBAutoConnect(String DBConfFile) {
-		dbConfStatus = loadDBsConf(DBConfFile);
-		dbStatus =dbConSetup(dbConfStatus);
+		if (DBConfFile != "") {
+			File fFile = new File(System.getProperty("user.dir") + "\\" + DBConfFile + ".cfg");
+			if (fFile.exists()) {
+				dbConfStatus = loadDBsConf(DBConfFile);
+				dbStatus = dbConSetup(dbConfStatus);
+			} else {
+				dbConfStatus = new ConfigLoader();
+				dbStatus = new DBCon();
+				System.out.println("Standard-Konfigurationsdatei nicht gefunden.");
+			}
+		}else {
+			dbConfStatus = loadDBsConf(DBConfFile);
+			dbStatus = dbConSetup(dbConfStatus);
+		}
 
 	}
 
 	/**
 	 * Laden einer Datenbankconfiguration anhand einer Configurationsfile
-	 * @param DBConfFile: Name / Pfad zur Configurationsdatei
+	 * 
+	 * @param DBConfFile:
+	 *            Name / Pfad zur Configurationsdatei
 	 * @return Datenbankconfigruation
 	 */
 	public static ConfigLoader loadDBsConf(String DBConfFile) {
@@ -73,7 +89,7 @@ public class ACore {
 		String working_dir = System.getProperty("user.dir");
 		working_dir += "\\" + DBConfFile + ".cfg"; // preselect file
 		try {
-			dbConf.setsFilePath(working_dir, "Wählen Sie die Konfiguration für "+sExpectedSchema );
+			dbConf.setsFilePath(working_dir, "Wählen Sie die Konfiguration für " + sExpectedSchema);
 		} catch (Exception e) {
 			dbConf.clearConfig(false);
 			try {
@@ -92,7 +108,9 @@ public class ACore {
 
 	/**
 	 * Eintichten einer DB-Verbindung anhand einer DB-Configuration
-	 * @param dbConf: Datenbankconfiguration
+	 * 
+	 * @param dbConf:
+	 *            Datenbankconfiguration
 	 * @return Datenbankverbindung
 	 */
 	public static DBCon dbConSetup(ConfigLoader dbConf) {
@@ -107,19 +125,20 @@ public class ACore {
 		}
 		return dbCon;
 	}
-	
+
 	/**
-	 * Überprüft ob das erwartete DB-Schema mit der Datenbank hinter der DB-Konfiguration
-	 * übereinstimmt
+	 * Überprüft ob das erwartete DB-Schema mit der Datenbank hinter der
+	 * DB-Konfiguration übereinstimmt
+	 * 
 	 * @return
 	 */
 	private static boolean bDBOK() {
 		// integritätscheck:
-		DBCheck dbcCheck=new DBCheck(dbStatus, sExpectedSchema);
+		DBCheck dbcCheck = new DBCheck(dbStatus, sExpectedSchema);
 		int iOK = dbcCheck.iDBIsInteger();
 		System.out.println("Datenbankintegrität: (-1: Fehler; 0:nicht Integer; 1:Integer): " + iOK);
 		if (iOK != 1) {
-			//dbStatus = null;
+			// dbStatus = null;
 			JOptionPane.showMessageDialog(null,
 					"Die mit der Konfiguration verbundene Datenbank entspricht nicht der erwarteten Struktur / Inhalt. \n"
 							+ "Bitte wählen Sie die richtige Konfiguarions-Datei und verbinden Sie sich erneut.");
@@ -131,11 +150,27 @@ public class ACore {
 
 	/**
 	 * Connect / Disconect zur DB und prüft ob verbindung steht
-	 * @param bDoConnect boolean - connect (true), disconnect (false)
-	 * @param dbCon: Datenbankverbindung
+	 * 
+	 * @param bDoConnect
+	 *            boolean - connect (true), disconnect (false)
+	 * @param dbCon:
+	 *            Datenbankverbindung
 	 * @return boolean: status der DB-Verbindung
 	 */
 	public static boolean dbConnect(boolean bDoConnect, DBCon dbCon) {
+		try {
+			if (dbStatus.isConnected()==false && dbConfStatus.bConfigIsLoaded()==false) {
+				JOptionPane.showMessageDialog(null,
+						"Es konnte keine Konfigurationsdatei für die Datenbankverbindung im Anwendungsverzeichnis gefunden werden. \n"
+								+ "Bitte wählen Sie die richtige Konfiguarions-Datei und verbinden Sie sich erneut.");
+				doDBAutoConnect("");
+			}
+		} catch (Exception e1) {
+			JOptionPane.showMessageDialog(null,
+					"Es konnte keine Konfigurationsdatei für die Datenbankverbindung im Anwendungsverzeichnis gefunden werden. \n"
+							+ "Bitte wählen Sie die richtige Konfiguarions-Datei und verbinden Sie sich erneut.");
+			doDBAutoConnect("");
+		}
 		if (bDBOK()) {
 			if (bDoConnect == true) {
 				try {
@@ -164,13 +199,19 @@ public class ACore {
 		}
 	}
 
-
 	/**
 	 * Prüft ob DB-Verbindung besteht
+	 * 
 	 * @return true / false
 	 */
 	public static boolean isDbConnected() {
-		return dbStatus.isConnected();
+		boolean bOK = false;
+		try {
+			bOK = dbStatus.isConnected();
+		} catch (Exception e) {
+			return false;
+		}
+		return bOK;
 	}
 
 	/**
@@ -214,21 +255,23 @@ public class ACore {
 		SysConf[17][0] = "Anschluss";
 		SysConf[17][1] = "Manuell eintragen";
 	}
-	
-	public static String getInstalledWinSW(){
-		String sSW="";
-		if (actSysInf.getOS().contains("Windows")){
-			for (String s:actSysInf.arrWinSoftwareList()){
-				sSW+=s+"\n";
-			};
-		}else{		
-		sSW = "Nur bei Windows-Systemen automatisch";
+
+	public static String getInstalledWinSW() {
+		String sSW = "";
+		if (actSysInf.getOS().contains("Windows")) {
+			for (String s : actSysInf.arrWinSoftwareList()) {
+				sSW += s + "\n";
+			}
+			;
+		} else {
+			sSW = "Nur bei Windows-Systemen automatisch";
 		}
 		return sSW;
 	}
 
 	/**
 	 * lädt die Systemkonfiguration und gibt diese als Array zurück
+	 * 
 	 * @return String[][] - Syteminformationen
 	 */
 	public static String[][] getSysInf() {
@@ -236,11 +279,13 @@ public class ACore {
 		return SysConf;
 	}
 
-	
 	/**
 	 * Erstellen / Updaten einen CI Eintrags in der DB
-	 * @param arrLValues: ArrayList<String> - Liste mit neuen Werten
-	 * @return int: Anzahl der veränderten Datensätze; Negativ: Update von Datensäten
+	 * 
+	 * @param arrLValues:
+	 *            ArrayList<String> - Liste mit neuen Werten
+	 * @return int: Anzahl der veränderten Datensätze; Negativ: Update von
+	 *         Datensäten
 	 */
 	public static int sendTicket(ArrayList<String> arrLValues) {
 		ArrayList<String> arrLCols = new ArrayList<String>();
@@ -274,7 +319,7 @@ public class ACore {
 
 				String[][] sCriteria = { { "COMPUTERNAME", arrLValues.get(0) } };
 				iDone = dbStatus.updateDataSet(sTable, buildArr(arrLCols, arrLValues), sCriteria);
-				iDone*=-1;
+				iDone *= -1;
 			} catch (Exception e) {
 				e.printStackTrace();
 				return 0;
@@ -285,7 +330,9 @@ public class ACore {
 
 	/**
 	 * Prüft ob ein CI bereits in der DB vorhanden ist
-	 * @param sVal: String - Name der CI
+	 * 
+	 * @param sVal:
+	 *            String - Name der CI
 	 * @return true / false;
 	 */
 	private static boolean bDoesExsist(String sVal) {
@@ -299,9 +346,9 @@ public class ACore {
 		if (arrL == null) {
 			return false;
 		} else {
-			if (arrL.contains(sVal)==true){
-			return true;
-			} else{
+			if (arrL.contains(sVal) == true) {
+				return true;
+			} else {
 				return false;
 			}
 		}
@@ -309,16 +356,19 @@ public class ACore {
 
 	/**
 	 * Erstellt ein 2-Dimensionales Array aus den Listen der Spalten und Werte
-	 * @param sCols: ArrayList<String> - Namen der Spalten
-	 * @param sVals: ArrayList<String> - Werte in den Spalten
+	 * 
+	 * @param sCols:
+	 *            ArrayList<String> - Namen der Spalten
+	 * @param sVals:
+	 *            ArrayList<String> - Werte in den Spalten
 	 * @return String[][] - [Spalte][Wert]
 	 */
-	private static String[][]buildArr(ArrayList<String> sCols, ArrayList<String> sVals){
-		String[][] sColContent = new  String[sCols.size()][2];
-			for (int cols=0; cols<=sCols.size()-1;cols++){
-				sColContent[cols][0]=sCols.get(cols);
-				sColContent[cols][1]=sVals.get(cols);
-			}			
+	private static String[][] buildArr(ArrayList<String> sCols, ArrayList<String> sVals) {
+		String[][] sColContent = new String[sCols.size()][2];
+		for (int cols = 0; cols <= sCols.size() - 1; cols++) {
+			sColContent[cols][0] = sCols.get(cols);
+			sColContent[cols][1] = sVals.get(cols);
+		}
 		return sColContent;
 	}
 
@@ -338,7 +388,7 @@ public class ACore {
 	@SuppressWarnings("unused")
 	private static String sForeignKey(DBCon db, String Crit, String CritCol, String PrimKey, String ForeignTable) {
 		ArrayList<String> arrlAL = new ArrayList<String>();
-		
+
 		try {
 			arrlAL = db.getSingleDataSetList(
 					"SELECT " + PrimKey + " FROM " + ForeignTable + " WHERE " + CritCol + "='" + Crit + "'");
@@ -354,5 +404,5 @@ public class ACore {
 			return "1";
 		}
 	}
-	
+
 }

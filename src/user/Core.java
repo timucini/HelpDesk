@@ -2,6 +2,7 @@
 package user;
 
 import java.awt.EventQueue;
+import java.io.File;
 import java.sql.SQLException;
 import sysInf.*;
 import java.util.ArrayList;
@@ -59,8 +60,20 @@ public class Core {
 	 *            String - Name / Pfad zur Configurationsdatei
 	 */
 	private static void doDBAutoConnect(String DBConfFile) {
-		dbConfStatus = loadDBsConf(DBConfFile);
-		dbStatus = dbConSetup(dbConfStatus);
+		if (DBConfFile != "") {
+			File fFile = new File(System.getProperty("user.dir") + "\\" + DBConfFile + ".cfg");
+			if (fFile.exists()) {
+				dbConfStatus = loadDBsConf(DBConfFile);
+				dbStatus = dbConSetup(dbConfStatus);
+			} else {
+				dbConfStatus = new ConfigLoader();
+				dbStatus = new DBCon();
+				System.out.println("Standard-Konfigurationsdatei nicht gefunden.");
+			}
+		}else {
+			dbConfStatus = loadDBsConf(DBConfFile);
+			dbStatus = dbConSetup(dbConfStatus);
+		}
 	}
 
 	/**
@@ -83,7 +96,7 @@ public class Core {
 		} catch (Exception e) {
 			dbConf.clearConfig(false);
 			try {
-				dbConf.setsFilePath("");
+				dbConf.clearConfig(false);
 			} catch (Exception e1) {
 				System.out.println("Es konnte keine Config-File eingerichtet werden.");
 				e1.printStackTrace();
@@ -147,6 +160,19 @@ public class Core {
 	 * @return boolean: status der DB-Verbindung
 	 */
 	public static boolean dbConnect(boolean bDoConnect, DBCon dbCon) {
+		try {
+			if (dbStatus.isConnected()==false && dbConfStatus.bConfigIsLoaded()==false) {
+				JOptionPane.showMessageDialog(null,
+						"Es konnte keine Konfigurationsdatei für die Datenbankverbindung im Anwendungsverzeichnis gefunden werden. \n"
+								+ "Bitte wählen Sie die richtige Konfiguarions-Datei und verbinden Sie sich erneut.");
+				doDBAutoConnect("");
+			}
+		} catch (Exception e1) {
+			JOptionPane.showMessageDialog(null,
+					"Es konnte keine Konfigurationsdatei für die Datenbankverbindung im Anwendungsverzeichnis gefunden werden. \n"
+							+ "Bitte wählen Sie die richtige Konfiguarions-Datei und verbinden Sie sich erneut.");
+			doDBAutoConnect("");
+		}
 		if (bDBOK()) {
 			if (bDoConnect == true) {
 				try {
@@ -181,10 +207,13 @@ public class Core {
 	 * @return true / false
 	 */
 	public static boolean isDbConnected() {
-		if (dbStatus == null) {
+		boolean bOK=false;
+		try{
+			bOK=dbStatus.isConnected();
+		}catch (Exception e){
 			return false;
 		}
-		return dbStatus.isConnected();
+		 return bOK;
 	}
 
 	/**

@@ -152,6 +152,8 @@ public class AdminGUI extends JFrame {
 		 */
 		showSysInf();
 		updatelbl(ACore.isDbConnected());
+
+		
 	}
 
 	/**
