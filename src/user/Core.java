@@ -14,6 +14,7 @@ import dbHelper.*;
  * @author Matthias Cohn (565998)
  * @version 1.2 (2017-06-26)
  */
+
 public class Core {
 	static String sDBConfFile = "admin";
 	final static String sExpectedSchema="Helpdesk"; // Ticket / Helpdesk / KEDB

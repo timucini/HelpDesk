@@ -6,5 +6,6 @@
 	<classpathentry exported="true" kind="lib" path="mysql-connector-java-5.1.42-bin.jar"/>
 	<classpathentry exported="true" kind="lib" path="sysInf.jar"/>
 	<classpathentry exported="true" kind="lib" path="dbHelper.jar"/>
+	<classpathentry kind="src" path="/SystemInformation"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
